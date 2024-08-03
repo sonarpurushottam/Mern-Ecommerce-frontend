@@ -1,4 +1,4 @@
-// ProductList.jsx
+// src/components/ProductList.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -12,7 +12,9 @@ const ProductList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/products/all-products");
+        const response = await axios.get(
+          "http://localhost:5000/api/products/all-products"
+        );
         setProducts(response.data.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -27,22 +29,52 @@ const ProductList = () => {
     return !!localStorage.getItem("token");
   };
 
-  const handleAddToCart = (productId) => {
+  const handleAddToCart = async (productId) => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to cart");
       navigate("/login");
       return;
     }
-    // Add to cart logic here
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/cart",
+        { productId, quantity: 1 },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      toast.success("Product added to cart");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      toast.error("Error adding product to cart");
+    }
   };
 
-  const handleAddToWishlist = (productId) => {
+  const handleAddToWishlist = async (productId) => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to wishlist");
       navigate("/login");
       return;
     }
-    // Add to wishlist logic here
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/wishlist",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      toast.success("Product added to wishlist");
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      toast.error("Error adding to wishlist");
+    }
   };
 
   return (

@@ -23,7 +23,7 @@ const Login = () => {
       // Assuming you store the token in local storage
       localStorage.setItem("token", data.token);
 
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       toast.error(error.response?.data.message || "Something went wrong!");
     }
