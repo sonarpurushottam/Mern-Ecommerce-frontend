@@ -1,175 +1,160 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useUserProfile, useUpdateUserProfile } from "../hooks/useUser"; // Adjust the path if necessary
+import toast from "react-hot-toast";
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState({
+  const { data, error, isLoading } = useUserProfile();
+  const mutation = useUpdateUserProfile();
+
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     mobile: "",
-    password: "",
     profilePic: "",
+    password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [file, setFile] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
 
-   // Fetch user profile data when component mounts
-   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const { data } = await axios.get(
-          "http://localhost:5000/api/users/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        console.log("Fetched user data:", data); // Log data for debugging
+  // Update formData when data changes
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        username: data.username || "",
+        email: data.email || "",
+        mobile: data.mobile || "",
+        profilePic: data.profilePic || "",
+        password: "", // Password should not be populated from the server
+      });
+    }
+  }, [data]);
 
-        // Update state with the fetched data
-        setUserData({
-          username: data.username || "",
-          email: data.email || "",
-          mobile: data.mobile || "",
-          password: "",
-          profilePic: data.profilePic || "",
-        });
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-        setErrorMessage("Error fetching user profile.");
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
-
-  // Handle input changes
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData((prevState) => ({ ...prevState, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   // Handle file input changes
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, profilePic: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Toggle password visibility
+  const handlePasswordToggle = () => {
+    setShowPassword((prev) => !prev);
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("username", userData.username);
-    formData.append("email", userData.email);
-    formData.append("mobile", userData.mobile);
-    formData.append("password", userData.password);
-    if (file) {
-      formData.append("profilePic", file);
-    }
+    const updatedFormData = new FormData();
+    updatedFormData.append("username", formData.username);
+    updatedFormData.append("email", formData.email);
+    updatedFormData.append("mobile", formData.mobile);
+    updatedFormData.append("password", formData.password);
+    if (file) updatedFormData.append("profilePic", file);
 
     try {
-      await axios.put("http://localhost:5000/api/users/profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setSuccessMessage("Profile updated successfully!");
-      // Reload the user data
-      const { data } = await axios.get(
-        "http://localhost:5000/api/users/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setUserData(data);
+      await mutation.mutateAsync(updatedFormData);
+      toast.success("Profile updated successfully!");
     } catch (error) {
-      setErrorMessage("Error updating profile.");
-      console.error("Error:", error);
+      toast.error("Failed to update profile. Please try again.");
     }
   };
 
-  // Handle logout
-  const handleLogout = async () => {
-    try {
-      await axios.post(
-        "http://localhost:5000/api/users/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      localStorage.removeItem("token"); // Remove token from local storage
-      navigate("/login"); // Redirect to login page
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
+  if (isLoading) return <div>Loading...</div>;
+  if (error) {
+    toast.error("Error fetching data");
+    return <div>Error fetching data</div>;
+  }
 
   return (
-    <div>
-      <h1>User Profile</h1>
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+    <div className="p-4 max-w-md mx-auto bg-white shadow-md rounded-lg">
+      <h2 className="text-xl font-bold mb-4">User Profile</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-            <div>
-                <label htmlFor="">shubham</label>
+        <div className="mb-4">
+          <label className="block text-gray-700">Profile Picture:</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="mt-1 block w-full text-sm text-gray-500"
+          />
+          {formData.profilePic ? (
+            <img
+              src={formData.profilePic}
+              alt="Profile"
+              className="mt-2 w-24 h-24 object-cover rounded-full border"
+            />
+          ) : (
+            <div className="mt-2 text-gray-500">
+              No profile picture available
             </div>
-            <div>
-                <label htmlFor="">shubham</label>
-            </div>
-          <label>Username:</label>
+          )}
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Username:</label>
           <input
             type="text"
             name="username"
-            value={userData.username}
+            value={formData.username}
             onChange={handleChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <div>
-          <label>Email:</label>
+        <div className="mb-4">
+          <label className="block text-gray-700">Email:</label>
           <input
             type="email"
             name="email"
-            value={userData.email}
+            value={formData.email}
             onChange={handleChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <div>
-          <label>Mobile:</label>
+        <div className="mb-4">
+          <label className="block text-gray-700">Mobile Number:</label>
           <input
-            type="text"
+            type="tel"
             name="mobile"
-            value={userData.mobile}
+            value={formData.mobile}
             onChange={handleChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <div>
-          <label>Password:</label>
+        <div className="mb-4">
+          <label className="block text-gray-700">Password:</label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
-            value={userData.password}
+            value={formData.password}
             onChange={handleChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
+          <button
+            type="button"
+            onClick={handlePasswordToggle}
+            className="mt-1 text-blue-500"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
         </div>
-        <div>
-          <label>Profile Picture:</label>
-          <input type="file" onChange={handleFileChange} />
-          {userData.profilePic && (
-            <img src={userData.profilePic} alt="Profile" style={{ width: "100px", height: "100px" }} />
-          )}
-        </div>
-        <button type="submit">Update Profile</button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Update Profile
+        </button>
       </form>
-      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 };

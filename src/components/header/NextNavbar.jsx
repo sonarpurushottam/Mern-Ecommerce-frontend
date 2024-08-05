@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Navigate, NavLink, useLocation } from "react-router-dom";
 import {
   FaBars,
   FaTimes,
@@ -78,9 +78,27 @@ export default function NextNavbar() {
     { name: "Login", path: "/login" },
     { name: "Address", path: "/address" },
     { name: "Products", path: "/products-list" },
+    { name: "Log Out", path: "/" },
     { name: "User Profile", path: "/user-profile" },
   ];
-
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/users/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      localStorage.removeItem("token");
+      Navigate("/");
+    }
+  };
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
