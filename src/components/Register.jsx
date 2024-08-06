@@ -3,8 +3,8 @@ import { FaUpload, FaEye, FaEyeSlash } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import useUserRegister from "../hooks/useUserRegister";
-import { useNavigate } from "react-router-dom";
+import useUserRegister from "../hooks/useRegister";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [preview, setPreview] = useState(null);
@@ -254,6 +254,14 @@ const Register = () => {
                 "Register"
               )}
             </button>
+          </div>
+          <div>
+            <p>already have an account</p>
+            <NavLink to="/login">
+              <button className="w-full px-4 py-2 text-white bg-red-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                Login
+              </button>
+            </NavLink>
           </div>
         </form>
       </div>

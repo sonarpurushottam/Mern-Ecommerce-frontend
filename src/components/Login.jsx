@@ -1,36 +1,46 @@
-import { useState } from "react";
+/* eslint-disable react/no-unescaped-entities */
+// src/components/Login.jsx
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { NavLink, useNavigate } from "react-router-dom";
+import useLogin from "../hooks/useLogin";
 import { motion } from "framer-motion";
+import { Toaster } from "react-hot-toast";
 
 const Login = () => {
-  const [emailOrMobile, setEmailOrMobile] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { mutate, isLoading } = useLogin();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validationSchema = Yup.object({
+    emailOrMobile: Yup.string().required("Email or Mobile is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+  });
 
-    try {
-      const { data } = await axios.post(
-        "http://localhost:5000/api/users/login",
-        { emailOrMobile, password }
+  const formik = useFormik({
+    initialValues: {
+      emailOrMobile: "",
+      password: "",
+      showPassword: false,
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      mutate(
+        { emailOrMobile: values.emailOrMobile, password: values.password },
+        {
+          onSuccess: () => {
+            navigate("/");
+          },
+        }
       );
-      toast.success("Logged in successfully!");
-      // Assuming you store the token in local storage
-      localStorage.setItem("token", data.token);
-
-      navigate("/");
-    } catch (error) {
-      toast.error(error.response?.data.message || "Something went wrong!");
-    }
-  };
+    },
+  });
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      <Toaster />
       <motion.div
         className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg"
         initial={{ opacity: 0, y: 50 }}
@@ -38,7 +48,8 @@ const Login = () => {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-2xl font-bold text-center">Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={formik.handleSubmit} className="space-y-6">
+          {/* Email or Mobile Field */}
           <div>
             <label
               htmlFor="emailOrMobile"
@@ -49,12 +60,25 @@ const Login = () => {
             <input
               type="text"
               id="emailOrMobile"
-              value={emailOrMobile}
-              onChange={(e) => setEmailOrMobile(e.target.value)}
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
+              name="emailOrMobile"
+              placeholder="Enter your email or mobile"
+              value={formik.values.emailOrMobile}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+                formik.touched.emailOrMobile && formik.errors.emailOrMobile
+                  ? "border-red-500"
+                  : ""
+              }`}
             />
+            {formik.touched.emailOrMobile && formik.errors.emailOrMobile && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.emailOrMobile}
+              </div>
+            )}
           </div>
+
+          {/* Password Field */}
           <div>
             <label
               htmlFor="password"
@@ -64,41 +88,60 @@ const Login = () => {
             </label>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={formik.values.showPassword ? "text" : "password"}
                 id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                required
+                name="password"
+                placeholder="Enter your password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+                  formik.touched.password && formik.errors.password
+                    ? "border-red-500"
+                    : ""
+                }`}
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() =>
+                  formik.setFieldValue(
+                    "showPassword",
+                    !formik.values.showPassword
+                  )
+                }
                 className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {formik.values.showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+            {formik.touched.password && formik.errors.password && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.password}
+              </div>
+            )}
           </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <a
-                href="#"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Forgot your password?
-              </a>
-            </div>
-          </div>
+
+          {/* Submit Button */}
           <div>
             <motion.button
               type="submit"
-              className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+              className={`w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Sign in
+              {isLoading ? "Logging in..." : "Login"}
             </motion.button>
+          </div>
+          <div>
+            <p>Don't have an account</p>
+            <NavLink to="/register">
+              <button className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                Register
+              </button>
+            </NavLink>
           </div>
         </form>
       </motion.div>
