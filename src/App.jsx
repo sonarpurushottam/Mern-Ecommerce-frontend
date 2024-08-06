@@ -12,15 +12,19 @@ import UserProfile from "./components/UserProfile";
 import Navbar from "./components/Navbar";
 import DemoComp from "./components/DemoComp";
 import BrandSlider from "./components/BrandSlider";
+import HomePage from "./pages/pages/HomePage";
+import BrandPage from "./pages/pages/BrandPage";
+import ProductPage from "./pages/pages/ProductPage";
 
 const App = () => {
   return (
     <Router>
       <Navbar />
+      <HomePage />
       <div className="pt-10 lg:pt-4">
         {" "}
         {/* Adjust the padding-top based on your Navbar height */}
-        <Routes>
+        {/* <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -33,6 +37,12 @@ const App = () => {
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/demo" element={<DemoComp />} />
           <Route path="/brands/:categoryId" element={<BrandSlider />} />
+        </Routes> */}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/brands/:categoryId" element={<BrandPage />} />
+          <Route path="/products/:brandId" element={<ProductPage />} />
+          {/* Define other routes */}
         </Routes>
       </div>
     </Router>
