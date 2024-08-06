@@ -1,5 +1,4 @@
 import { ProductOne } from "../components/ProductOne";
-import BrandSlider from "./BrandSlider";
 import CategorySlider from "./CategorySlider";
 const DemoComp = () => {
   return (
@@ -8,7 +7,6 @@ const DemoComp = () => {
       <h1>sonar</h1>
       <ProductOne />
       <CategorySlider />
-      <BrandSlider />
     </>
   );
 };

@@ -11,6 +11,7 @@ import Cart from "./components/Cart";
 import UserProfile from "./components/UserProfile";
 import Navbar from "./components/Navbar";
 import DemoComp from "./components/DemoComp";
+import BrandSlider from "./components/BrandSlider";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/demo" element={<DemoComp />} />
+          <Route path="/brands/:categoryId" element={<BrandSlider />} />
         </Routes>
       </div>
     </Router>

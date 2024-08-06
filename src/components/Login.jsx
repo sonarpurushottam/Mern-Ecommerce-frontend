@@ -7,6 +7,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import useLogin from "../hooks/useLogin";
 import { motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
+import BrandSlider from "./BrandSlider";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -145,6 +146,7 @@ const Login = () => {
           </div>
         </form>
       </motion.div>
+      <BrandSlider />
     </div>
   );
 };
