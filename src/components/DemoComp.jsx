@@ -1,12 +1,14 @@
-import { ProductOne } from "../components/ProductOne";
-import CategorySlider from "./CategorySlider";
+// import { ProductOne } from "../components/ProductOne";
+// import CategorySlider from "./CategorySlider";
+
+import HomePage from "../pages/pages/HomePage";
+
 const DemoComp = () => {
   return (
     <>
-      <h1>SHubham</h1>
-      <h1>sonar</h1>
-      <ProductOne />
-      <CategorySlider />
+      {/* <ProductOne /> */}
+      {/* <CategorySlider /> */}
+      <HomePage />
     </>
   );
 };
