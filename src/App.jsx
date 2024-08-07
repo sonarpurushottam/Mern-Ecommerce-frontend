@@ -11,7 +11,7 @@ import Cart from "./components/Cart";
 import UserProfile from "./components/UserProfile";
 import Navbar from "./components/Navbar";
 import DemoComp from "./components/DemoComp";
-// import BrandSlider from "./components/BrandSlider";
+
 import BrandPage from "./pages/pages/BrandPage";
 import ProductPage from "./pages/pages/ProductPage";
 
@@ -35,7 +35,7 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/demo" element={<DemoComp />} />
-          {/* <Route path="/brands/:categoryId" element={<BrandSlider />} /> */}
+        
           <Route path="/brands/:categoryId" element={<BrandPage />} />
           <Route path="/products/:brandId" element={<ProductPage />} />
         </Routes>

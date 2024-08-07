@@ -93,7 +93,7 @@ const CategorySlider = () => {
   }, []);
 
   const handleCategoryClick = (categoryId) => {
-    navigate(`/brands/${categoryId}`);
+    navigate(`/brands/${categoryId._id}`);
   };
 
   return (

@@ -1,5 +1,6 @@
 import HeroSection from "../components/HeroSection";
-import Category from "./../components/Category/Category";
+// import Category from "./../components/Category/Category";
+import Category from "./../components/Category";
 import Category2 from "./../components/Category/Category2";
 import Hero from "./../components/Hero/Hero";
 // import Services from "./../components/Services/Services";
@@ -40,6 +41,7 @@ const Home = () => {
   };
   return (
     <div className="container mx-auto p-4">
+      <Category />
       <HeroSection />
       <Category />
       <Category2 />

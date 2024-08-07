@@ -1,189 +1,186 @@
-import { useState, useEffect, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
-import {
-  FaBars,
-  FaTimes,
-  FaShoppingCart,
-  FaHeart,
-  FaUser,
-} from "react-icons/fa";
-import { MdSearch } from "react-icons/md";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { AiOutlineDelete } from "react-icons/ai";
 
-export default function NextNavbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [isNavbarVisible, setIsNavbarVisible] = useState(true); // Navbar visibility state
-  const [lastScrollY, setLastScrollY] = useState(0); // Track last scroll position
-  const navbarRef = useRef(null);
+const Cart = () => {
+  const [cart, setCart] = useState({ items: [] });
   const navigate = useNavigate();
 
-  // Toggle the menu state
-  const toggleMenu = () => {
-    setIsMenuOpen((prevState) => !prevState);
-  };
-
-  // Close the menu when a link is clicked
-  const handleLinkClick = () => {
-    setIsMenuOpen(false); // Close the menu
-  };
-
-  const menuItems = [
-    { name: "Home", path: "/" },
-    { name: "Register", path: "/register" },
-    { name: "Login", path: "/login" },
-    { name: "Address", path: "/address" },
-    { name: "Products", path: "/products-list" },
-    { name: "User Management", path: "/user-crud" }, // User Management link
-    { name: "Log Out", path: "/" },
-  ];
-
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchCart = async () => {
       try {
-        const { data } = await axios.get(
-          "http://localhost:5000/api/users/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        setUser(data);
+        const response = await axios.get("http://localhost:5000/api/cart", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setCart(response.data);
       } catch (error) {
-        console.error("Failed to fetch user profile:", error);
+        console.error("Error fetching cart:", error);
+        toast.error("Error fetching cart");
       }
     };
 
-    fetchUserProfile();
+    fetchCart();
   }, []);
 
-  const handleLogout = async () => {
+  const handleUpdateQuantity = async (itemId, quantity) => {
+    if (quantity < 1) return;
+
     try {
-      await axios.post(
-        "http://localhost:5000/api/users/logout",
-        {},
+      // Optimistically update UI
+      setCart((prevCart) => ({
+        ...prevCart,
+        items: prevCart.items.map((item) =>
+          item._id === itemId ? { ...item, quantity } : item
+        ),
+      }));
+
+      await axios.put(
+        "http://localhost:5000/api/cart",
+        { itemId, quantity },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
+
+      toast.success("Cart updated");
     } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      localStorage.removeItem("token");
-      navigate("/");
+      console.error("Error updating cart:", error);
+      toast.error("Error updating cart");
     }
   };
 
-  // Handle scroll event to show/hide navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      if (scrollY > lastScrollY) {
-        setIsNavbarVisible(false); // Scrolling down
-      } else {
-        setIsNavbarVisible(true); // Scrolling up
-      }
-      setLastScrollY(scrollY);
-    };
+  const handleRemoveFromCart = async (itemId, event) => {
+    event.preventDefault();
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+    try {
+      await axios.delete(`http://localhost:5000/api/cart/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setCart((prevCart) => ({
+        ...prevCart,
+        items: prevCart.items.filter((item) => item._id !== itemId),
+      }));
+
+      toast.success("Item removed from cart");
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+      toast.error("Error removing item from cart");
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      // Update the cart with the latest item quantities and then clear it
+      await axios.put(
+        "http://localhost:5000/api/cart",
+        { items: cart.items, clear: true }, // Add clear flag to indicate cart should be cleared
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Clear local cart state
+      setCart({ items: [] });
+
+      // Redirect to the order page or any other page as needed
+      navigate("/order"); // Adjust the path as necessary
+      toast.success("Checkout successful. Redirecting to order page.");
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      toast.error("Error during checkout");
+    }
+  };
+
+  if (!cart.items.length) {
+    return <div className="text-center text-gray-500">Your cart is empty.</div>;
+  }
+
+  const totalAmount = cart.items.reduce(
+    (total, item) =>
+      total + (item.productId?.price || 0) * (item.quantity || 0),
+    0
+  );
 
   return (
-    <nav
-      ref={navbarRef}
-      className={`bg-white shadow-md fixed w-full z-10 top-0 left-0 transition-transform duration-300 ${
-        isNavbarVisible ? "translate-y-0" : "-translate-y-full"
-      }`}
-    >
-      <div className="container mx-auto flex items-center justify-between p-4">
-        <div className="flex items-center">
-          <button
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="block sm:hidden"
-            onClick={toggleMenu}
-          >
-            {isMenuOpen ? (
-              <FaTimes className="w-6 h-6 text-black" /> // Close icon
-            ) : (
-              <FaBars className="w-6 h-6 text-black" /> // Menu (hamburger) icon
-            )}
-          </button>
-          <div className="ml-4 flex items-center">
-            <p className="hidden sm:block font-bold text-lg">ACME</p>
-          </div>
-        </div>
-
-        <div className="hidden sm:flex flex-grow items-center justify-center space-x-4">
-          {menuItems.slice(0, 5).map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) =>
-                `text-lg ${isActive ? "text-primary" : "text-gray-700"}`
-              }
-            >
-              {item.name}
-            </NavLink>
-          ))}
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <div className="relative flex items-center">
-            <input
-              className="border rounded-md p-2 pl-10 w-full sm:w-64"
-              placeholder="Type to search..."
-              type="search"
-            />
-            <MdSearch
-              className="absolute inset-y-0 left-2 flex items-center text-gray-500"
-              size={18}
-            />
-          </div>
-          <NavLink to="/wishlist" className="text-gray-700 hover:text-primary">
-            <FaHeart className="w-6 h-6" />
-          </NavLink>
-          <NavLink to="/cart" className="text-gray-700 hover:text-primary">
-            <FaShoppingCart className="w-6 h-6" />
-          </NavLink>
-          <NavLink to="/user-crud" className="text-gray-700 hover:text-primary">
-            <FaUser className="w-6 h-6" /> {/* User icon */}
-          </NavLink>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      <motion.div
-        className={`fixed top-16 left-0 w-full bg-white shadow-md z-20 ${
-          isMenuOpen ? "block" : "hidden"
-        }`}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-      >
-        <ul className="space-y-2 p-4">
-          {menuItems.map((item, index) => (
-            <li key={`${item.name}-${index}`}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `block p-2 text-lg ${
-                    isActive ? "text-primary" : "text-gray-700"
-                  }`
+    <div className="container mx-auto p-4">
+      <h2 className="text-3xl font-bold mb-4">Your Cart</h2>
+      <ul className="divide-y divide-gray-200">
+        {cart.items.map((item) => (
+          <li key={item._id} className="flex justify-between items-center py-4">
+            <div className="flex items-center">
+              <img
+                className="h-20 w-20 object-cover mr-4"
+                src={
+                  item.productId?.productImage?.[0] || "/default_image_url.png"
                 }
-                onClick={handleLinkClick} // Hide menu on link click
-              >
-                {item.name}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </motion.div>
-    </nav>
+                alt={item.productId?.name || "Product Image"}
+              />
+              <div>
+                <h3 className="text-lg font-semibold">
+                  {item.productId?.name || "Product Name"}
+                </h3>
+                <p>Price: ₹{item.productId?.price || 0}</p>
+                <p>
+                  Subtotal: ₹
+                  {(item.productId?.price * (item.quantity || 0)).toFixed(2)}
+                </p>
+                <div className="flex items-center mt-2">
+                  <button
+                    onClick={() =>
+                      handleUpdateQuantity(item._id, (item.quantity || 1) - 1)
+                    }
+                    className="bg-gray-200 px-2 py-1 rounded"
+                    disabled={item.quantity <= 1}
+                  >
+                    -
+                  </button>
+                  <span className="mx-2">{item.quantity || 0}</span>
+                  <button
+                    onClick={() =>
+                      handleUpdateQuantity(item._id, (item.quantity || 1) + 1)
+                    }
+                    className="bg-gray-200 px-2 py-1 rounded"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={(event) => handleRemoveFromCart(item._id, event)}
+              className="text-red-500"
+            >
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="text-right mt-4">
+        <p className="text-lg font-semibold">
+          Total: ₹{totalAmount.toFixed(2)}
+        </p>
+      </div>
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleCheckout}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Checkout
+        </button>
+      </div>
+    </div>
   );
-}
+};
+
+export default Cart;
