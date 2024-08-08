@@ -16,6 +16,7 @@ const Cart = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        console.log("Fetched cart data:", response.data);
         setCart(response.data);
       } catch (error) {
         console.error("Error fetching cart:", error);
@@ -78,21 +79,64 @@ const Cart = () => {
 
   const handleCheckout = async () => {
     try {
-      await axios.post(
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+
+      if (!userId) {
+        throw new Error("User not logged in");
+      }
+
+      if (!cart.items || cart.items.length === 0) {
+        throw new Error("Cart is empty");
+      }
+
+      // Ensure each item has the required fields
+      const items = cart.items.map((item) => ({
+        productId: item.productId, // Ensure productId exists
+        quantity: item.quantity, // Ensure quantity is a positive number
+        price: item.productId?.price || 0, // Ensure price is valid
+      }));
+
+      const totalAmount = items.reduce((sum, item) => {
+        if (!item.price || item.quantity <= 0) {
+          throw new Error("Invalid cart item data");
+        }
+        return sum + item.price * item.quantity;
+      }, 0);
+
+      if (totalAmount === 0) {
+        throw new Error("Total amount is zero");
+      }
+
+      const checkoutData = {
+        userId,
+        items,
+        totalAmount,
+      };
+
+      console.log("Checkout data:", checkoutData);
+
+      const response = await axios.post(
         "http://localhost:5000/api/orders",
-        { items: cart.items },
+        checkoutData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      navigate("/order");
+      console.log("Order response:", response.data);
+
+      navigate(`/order/${response.data._id}`);
       toast.success("Checkout successful. Redirecting to order page.");
     } catch (error) {
-      console.error("Error during checkout:", error);
-      toast.error("Error during checkout");
+      console.error(
+        "Error during checkout:",
+        error.response?.data?.message || error.message
+      );
+      toast.error(error.response?.data?.message || "Error during checkout");
     }
   };
 

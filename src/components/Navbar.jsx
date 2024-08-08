@@ -105,6 +105,12 @@ const Navbar = () => {
                   >
                     Profile
                   </NavLink>
+                  <NavLink
+                    to="/order/:id"
+                    className="block px-4 py-2 hover:bg-neutral-100"
+                  >
+                    Orders
+                  </NavLink>
                   <button
                     onClick={handleLogout}
                     className="block px-4 py-2 hover:bg-neutral-100 w-full text-left"

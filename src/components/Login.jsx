@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-// src/components/Login.jsx
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -11,7 +9,6 @@ import { Toaster } from "react-hot-toast";
 const Login = () => {
   const navigate = useNavigate();
   const { mutate, isLoading } = useLogin();
-  
 
   const validationSchema = Yup.object({
     emailOrMobile: Yup.string().required("Email or Mobile is required"),
@@ -137,7 +134,7 @@ const Login = () => {
             </motion.button>
           </div>
           <div>
-            <p>Don't have an account</p>
+            <p>Don't have an account?</p>
             <NavLink to="/register">
               <button className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
                 Register

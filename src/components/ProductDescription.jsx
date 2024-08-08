@@ -35,22 +35,52 @@ const ProductDescription = () => {
     return !!localStorage.getItem("token");
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to cart");
       navigate("/login");
       return;
     }
-    // Add to cart logic here
+
+    try {
+      await axios.post(
+        `http://localhost:5000/api/cart`,
+        { productId: product._id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      toast.success("Product added to cart");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Error adding to cart");
+    }
   };
 
-  const handleAddToWishlist = () => {
+  const handleAddToWishlist = async () => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to wishlist");
       navigate("/login");
       return;
     }
-    // Add to wishlist logic here
+
+    try {
+      await axios.post(
+        `http://localhost:5000/api/wishlist`,
+        { productId: product._id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      toast.success("Product added to wishlist");
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      toast.error("Error adding to wishlist");
+    }
   };
 
   if (!product) return <div>Loading...</div>;

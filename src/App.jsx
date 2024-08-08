@@ -14,12 +14,13 @@ import DemoComp from "./components/DemoComp";
 
 import BrandPage from "./pages/pages/BrandPage";
 import ProductPage from "./pages/pages/ProductPage";
+import Order from "./components/Order";
 
 const App = () => {
   return (
     <Router>
       <Navbar />
-      
+
       <div className="pt-10 lg:pt-4">
         {" "}
         {/* Adjust the padding-top based on your Navbar height */}
@@ -35,7 +36,7 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/demo" element={<DemoComp />} />
-        
+          <Route path="/order/:id" element={<Order />} />
           <Route path="/brands/:categoryId" element={<BrandPage />} />
           <Route path="/products/:brandId" element={<ProductPage />} />
         </Routes>
