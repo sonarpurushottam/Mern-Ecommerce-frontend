@@ -1,47 +1,24 @@
 // src/components/Wishlist.jsx
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { toast } from "react-hot-toast";
+import React from "react";
+import useWishlist from "../hooks/useWishlist";
 import { AiFillDelete } from "react-icons/ai";
 
 const Wishlist = () => {
-  const [wishlist, setWishlist] = useState([]);
+  const { wishlist, loading, error, handleRemoveFromWishlist } = useWishlist();
 
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        const { data } = await axios.get("http://localhost:5000/api/wishlist", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setWishlist(data.items);
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Failed to fetch wishlist"
-        );
-      }
-    };
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading wishlist...</div>;
+  }
 
-    fetchWishlist();
-  }, []);
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
-  const removeFromWishlist = async (itemId) => {
-    try {
-      const { data } = await axios.delete(
-        `http://localhost:5000/api/wishlist/${itemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setWishlist(data.items);
-      toast.success("Item removed from wishlist");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to remove item");
-    }
-  };
+  if (!wishlist || wishlist.length === 0) {
+    return (
+      <div className="text-center text-gray-500">Your wishlist is empty.</div>
+    );
+  }
 
   return (
     <div className="wishlist-container">
@@ -53,16 +30,16 @@ const Wishlist = () => {
             className="wishlist-item p-4 border rounded shadow-md"
           >
             <img
-              src={item.productId.productImage[0]}
+              src={item.productId.productImage[0] || "/default_image_url.png"}
               alt={item.productId.name}
               className="w-full h-48 object-cover"
             />
             <h3 className="text-xl font-semibold mt-2">
               {item.productId.name}
             </h3>
-            <p className="mt-1">Price: ${item.productId.price}</p>
+            <p className="mt-1">Price: ₹{item.productId.price}</p>
             <button
-              onClick={() => removeFromWishlist(item._id)}
+              onClick={() => handleRemoveFromWishlist(item._id)}
               className="text-red-500 mt-2 flex items-center"
             >
               <AiFillDelete className="mr-1" /> Remove

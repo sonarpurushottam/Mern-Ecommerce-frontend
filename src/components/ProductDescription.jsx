@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
@@ -9,81 +8,46 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+import { useProductById } from "../hooks/useProducts"; // Adjust the path as needed
+import { useAddToCart, useAddToWishlist } from "../hooks/useCartWishlist"; // Adjust the path as needed
 
 const ProductDescription = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
   const navigate = useNavigate();
+  const { data: product, isLoading, isError, error } = useProductById(id);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/products/${id}`
-        );
-        setProduct(response.data.product);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-        toast.error("Error fetching product");
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
+  const { mutate: addToCart } = useAddToCart();
+  const { mutate: addToWishlist } = useAddToWishlist();
 
   const isLoggedIn = () => {
     return !!localStorage.getItem("token");
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to cart");
       navigate("/login");
       return;
     }
 
-    try {
-      await axios.post(
-        `http://localhost:5000/api/cart`,
-        { productId: product._id },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      toast.success("Product added to cart");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("Error adding to cart");
-    }
+    addToCart(product._id);
   };
 
-  const handleAddToWishlist = async () => {
+  const handleAddToWishlist = () => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to wishlist");
       navigate("/login");
       return;
     }
 
-    try {
-      await axios.post(
-        `http://localhost:5000/api/wishlist`,
-        { productId: product._id },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      toast.success("Product added to wishlist");
-    } catch (error) {
-      console.error("Error adding to wishlist:", error);
-      toast.error("Error adding to wishlist");
-    }
+    addToWishlist(product._id);
   };
 
-  if (!product) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    console.error("Error fetching product:", error);
+    return <div>Error fetching product</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">

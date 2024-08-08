@@ -1,154 +1,28 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { toast } from "react-hot-toast";
+// src/components/Cart.jsx
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineDelete } from "react-icons/ai";
+import { useCart } from "../hooks/useCart";
 
 const Cart = () => {
-  const [cart, setCart] = useState({ items: [] });
   const navigate = useNavigate();
+  const { cart, isLoading, error, handleRemoveFromCart, handleUpdateQuantity, handleCheckout } = useCart();
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/cart", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        console.log("Fetched cart data:", response.data);
-        setCart(response.data);
-      } catch (error) {
-        console.error("Error fetching cart:", error);
-        toast.error("Error fetching cart");
-      }
-    };
-
-    fetchCart();
-  }, []);
-
-  const handleRemoveFromCart = async (itemId) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/cart/${itemId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      setCart((prevCart) => ({
-        ...prevCart,
-        items: prevCart.items.filter((item) => item._id !== itemId),
-      }));
-
-      toast.success("Item removed from cart");
-    } catch (error) {
-      console.error("Error removing item from cart:", error);
-      toast.error("Error removing item from cart");
-    }
-  };
-
-  const handleUpdateQuantity = async (itemId, quantity) => {
-    if (quantity < 0) return;
-
-    try {
-      const updatedItems = cart.items.map((item) =>
-        item._id === itemId ? { ...item, quantity } : item
-      );
-
-      await axios.put(
-        "http://localhost:5000/api/cart",
-        { items: updatedItems },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      setCart((prevCart) => ({
-        ...prevCart,
-        items: updatedItems.filter((item) => item.quantity > 0),
-      }));
-
-      toast.success("Cart updated");
-    } catch (error) {
-      console.error("Error updating quantity:", error);
-      toast.error("Error updating quantity");
-    }
-  };
-
-  const handleCheckout = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      const token = localStorage.getItem("token");
-
-      if (!userId) {
-        throw new Error("User not logged in");
-      }
-
-      if (!cart.items || cart.items.length === 0) {
-        throw new Error("Cart is empty");
-      }
-
-      // Ensure each item has the required fields
-      const items = cart.items.map((item) => ({
-        productId: item.productId, // Ensure productId exists
-        quantity: item.quantity, // Ensure quantity is a positive number
-        price: item.productId?.price || 0, // Ensure price is valid
-      }));
-
-      const totalAmount = items.reduce((sum, item) => {
-        if (!item.price || item.quantity <= 0) {
-          throw new Error("Invalid cart item data");
-        }
-        return sum + item.price * item.quantity;
-      }, 0);
-
-      if (totalAmount === 0) {
-        throw new Error("Total amount is zero");
-      }
-
-      const checkoutData = {
-        userId,
-        items,
-        totalAmount,
-      };
-
-      console.log("Checkout data:", checkoutData);
-
-      const response = await axios.post(
-        "http://localhost:5000/api/orders",
-        checkoutData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("Order response:", response.data);
-
-      navigate(`/order/${response.data._id}`);
-      toast.success("Checkout successful. Redirecting to order page.");
-    } catch (error) {
-      console.error(
-        "Error during checkout:",
-        error.response?.data?.message || error.message
-      );
-      toast.error(error.response?.data?.message || "Error during checkout");
-    }
-  };
-
-  if (!cart.items.length) {
-    return <div className="text-center text-gray-500">Your cart is empty.</div>;
-  }
+  if (isLoading) return <div className="text-center text-gray-500">Loading...</div>;
+  if (error) return <div className="text-center text-red-500">Error fetching cart</div>;
+  if (!cart.items.length) return <div className="text-center text-gray-500">Your cart is empty.</div>;
 
   const totalAmount = cart.items.reduce(
-    (total, item) =>
-      total + (item.productId?.price || 0) * (item.quantity || 0),
+    (total, item) => total + (item.productId?.price || 0) * (item.quantity || 0),
     0
   );
+
+  const handleCheckoutClick = async () => {
+    const orderId = await handleCheckout();
+    if (orderId) {
+      navigate(`/order/${orderId}`);
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -211,7 +85,7 @@ const Cart = () => {
       </div>
       <div className="flex justify-end mt-4">
         <button
-          onClick={handleCheckout}
+          onClick={handleCheckoutClick}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Checkout

@@ -1,32 +1,22 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+// src/components/Order.jsx
+import React from "react";
 import { useParams } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import useOrder from "../hooks/useOrder"; // Adjust the path as needed
 
 const Order = () => {
   const { id } = useParams();
-  const [order, setOrder] = useState(null);
+  const { order, loading, error } = useOrder(id);
 
-  useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/orders/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setOrder(response.data);
-      } catch (error) {
-        console.error("Error fetching order:", error);
-        toast.error("Error fetching order");
-      }
-    };
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading order...</div>;
+  }
 
-    fetchOrder();
-  }, [id]);
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
   if (!order) {
-    return <div className="text-center text-gray-500">Loading order...</div>;
+    return <div className="text-center text-gray-500">Order not found.</div>;
   }
 
   const totalAmount = order.items.reduce(
@@ -43,9 +33,7 @@ const Order = () => {
             <div className="flex items-center">
               <img
                 className="h-20 w-20 object-cover mr-4"
-                src={
-                  item.productId.productImage[0] || "/default_image_url.png"
-                }
+                src={item.productId.productImage[0] || "/default_image_url.png"}
                 alt={item.productId.name}
               />
               <div>
@@ -53,8 +41,7 @@ const Order = () => {
                 <p>Price: ₹{item.productId.price}</p>
                 <p>Quantity: {item.quantity}</p>
                 <p>
-                  Subtotal: ₹
-                  {(item.productId.price * item.quantity).toFixed(2)}
+                  Subtotal: ₹{(item.productId.price * item.quantity).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -62,12 +49,12 @@ const Order = () => {
         ))}
       </ul>
       <div className="text-right mt-4">
-        <p className="text-lg font-semibold">Total: ₹{totalAmount.toFixed(2)}</p>
+        <p className="text-lg font-semibold">
+          Total: ₹{totalAmount.toFixed(2)}
+        </p>
       </div>
       <div className="text-right mt-4">
-        <p className="text-lg font-semibold">
-          Order Status: {order.status}
-        </p>
+        <p className="text-lg font-semibold">Order Status: {order.status}</p>
       </div>
     </div>
   );
