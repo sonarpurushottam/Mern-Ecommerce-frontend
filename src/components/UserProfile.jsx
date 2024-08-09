@@ -2,10 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useUserProfile, useUpdateUserProfile } from "../hooks/useUser";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  FaUserCircle,
+  FaFileUpload,
+  FaEye,
+  FaEyeSlash,
+  FaSpinner,
+} from "react-icons/fa";
 
 const UserProfile = () => {
   const { data, error, isLoading } = useUserProfile();
   const mutation = useUpdateUserProfile();
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -16,6 +25,7 @@ const UserProfile = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [file, setFile] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -35,8 +45,8 @@ const UserProfile = () => {
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
     const file = e.target.files[0];
+    setFile(file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -52,6 +62,7 @@ const UserProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsUpdating(true);
     const updatedFormData = new FormData();
     updatedFormData.append("username", formData.username);
     updatedFormData.append("email", formData.email);
@@ -61,9 +72,12 @@ const UserProfile = () => {
 
     try {
       await mutation.mutateAsync(updatedFormData);
+      queryClient.invalidateQueries(["userProfile"]);
       toast.success("Profile updated successfully!");
     } catch (error) {
       toast.error("Failed to update profile. Please try again.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -75,87 +89,98 @@ const UserProfile = () => {
 
   return (
     <motion.div
-      className="p-6 max-w-lg mx-auto bg-white shadow-lg rounded-lg"
+      className="p-4 sm:p-6 bg-white shadow-lg rounded-lg max-w-md mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-2xl font-bold mb-6 text-center">User Profile</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+        User Profile
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center justify-center mb-4">
-          <label className="block text-gray-700 mr-4">Profile Picture:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="block text-sm text-gray-500"
-          />
-        </div>
-        {formData.profilePic && (
-          <div className="flex justify-center mb-4">
+        <div className="flex flex-col items-center">
+          {formData.profilePic ? (
             <motion.img
               src={formData.profilePic}
               alt="Profile"
-              className="w-32 h-32 object-cover rounded-full border border-gray-300"
+              className="w-24 h-24 object-cover rounded-full border border-gray-300 mb-4"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.5 }}
             />
-          </div>
-        )}
-        <div className="mb-4">
-          <label className="block text-gray-700">Username:</label>
+          ) : (
+            <FaUserCircle className="text-gray-400 text-7xl mb-4" />
+          )}
+          <label className="block text-gray-700 mb-2 flex items-center cursor-pointer">
+            <FaFileUpload className="mr-2 text-gray-600" />
+            <span>Choose Profile Picture</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-gray-700 mb-2">Username:</label>
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+            className="block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Email:</label>
+        <div>
+          <label className="block text-gray-700 mb-2">Email:</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+            className="block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Mobile Number:</label>
+        <div>
+          <label className="block text-gray-700 mb-2">Mobile Number:</label>
           <input
             type="tel"
             name="mobile"
             value={formData.mobile}
             onChange={handleChange}
-            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+            className="block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Password:</label>
+        <div className="relative">
+          <label className="block text-gray-700 mb-2">Password:</label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+            className="block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="button"
             onClick={handlePasswordToggle}
-            className="mt-1 text-blue-500 hover:text-blue-700"
+            className="absolute top-2 right-3 text-blue-500 hover:text-blue-700"
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
-        <button
+        <motion.button
           type="submit"
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105"
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105 flex items-center justify-center"
+          whileTap={{ scale: 0.95 }}
         >
-          Update Profile
-        </button>
+          {isUpdating ? (
+            <FaSpinner className="animate-spin mr-2" />
+          ) : (
+            "Update Profile"
+          )}
+        </motion.button>
       </form>
     </motion.div>
   );
