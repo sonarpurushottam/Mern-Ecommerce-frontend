@@ -1,19 +1,19 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
+import { Pagination, A11y } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
-import "swiper/css/scrollbar";
-import { useProductById } from "../hooks/useProducts"; // Adjust the path as needed
-import { useAddToCart, useAddToWishlist } from "../hooks/useCartWishlist"; // Adjust the path as needed
+import { useProductById } from "../hooks/useProducts";
+import { useAddToCart, useAddToWishlist } from "../hooks/useCartWishlist";
+import Breadcrumbs from "./Breadcrumbs";
 
 const ProductDescription = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const { data: product, isLoading, isError, error } = useProductById(id);
 
   const { mutate: addToCart } = useAddToCart();
@@ -31,6 +31,7 @@ const ProductDescription = () => {
     }
 
     addToCart(product._id);
+    toast.success("Added to cart");
   };
 
   const handleAddToWishlist = () => {
@@ -41,6 +42,7 @@ const ProductDescription = () => {
     }
 
     addToWishlist(product._id);
+    toast.success("Added to wishlist");
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -50,63 +52,91 @@ const ProductDescription = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex flex-col items-center">
+    <div className="container mx-auto p-6 md:p-12">
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        crumbs={[
+          { label: "Home", link: "/" },
+          { label: "Products", link: "/products" },
+          { label: product.name },
+        ]}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Image Slider */}
+        <div className="relative w-full h-96 md:h-[40rem]">
           <Swiper
-            modules={[Navigation, Pagination, Scrollbar, A11y]}
+            modules={[Pagination, A11y]}
             spaceBetween={10}
             slidesPerView={1}
-            navigation
             pagination={{ clickable: true }}
-            scrollbar={{ draggable: true }}
-            className="w-full h-64 md:h-96 mb-4 rounded-lg"
+            className="w-full h-full rounded-lg overflow-hidden"
           >
             {product.productImage.map((image, index) => (
               <SwiperSlide key={index}>
-                <motion.img
-                  src={image}
-                  alt={`Product ${index}`}
-                  className="w-full h-full object-cover rounded-lg shadow-lg"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                />
+                <motion.div className="relative w-full h-full">
+                  <img
+                    src={image}
+                    alt={`Product ${index}`}
+                    className="absolute inset-0 w-full h-full object-contain"
+                  />
+                </motion.div>
               </SwiperSlide>
             ))}
           </Swiper>
         </div>
-        <div>
-          <h2 className="text-3xl font-bold mb-2">{product.name}</h2>
-          <p className="text-xl text-gray-700 mb-4">${product.price}</p>
-          <p className="mb-4 text-gray-600">{product.description}</p>
-          <div className="flex space-x-4 mb-6">
-            <button
+
+        {/* Product Details */}
+        <div className="flex flex-col justify-center">
+          <motion.h2
+            className="text-4xl font-bold mb-4 text-gray-800"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {product.name}
+          </motion.h2>
+          <motion.p
+            className="text-2xl text-gray-700 mb-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            ₹{product.price}
+          </motion.p>
+          <motion.p
+            className="text-gray-600 mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            {product.description}
+          </motion.p>
+          <div className="flex space-x-4 mb-8">
+            <motion.button
               onClick={handleAddToCart}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+              className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-md shadow-lg transform hover:scale-105 transition-transform duration-300 ease-out"
+              whileTap={{ scale: 0.95 }}
             >
               Add to Cart
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={handleAddToWishlist}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+              className="bg-gradient-to-r from-green-500 to-green-700 text-white px-6 py-3 rounded-md shadow-lg transform hover:scale-105 transition-transform duration-300 ease-out"
+              whileTap={{ scale: 0.95 }}
             >
               Add to Wishlist
-            </button>
+            </motion.button>
           </div>
-          <div>
-            <h3 className="text-xl font-semibold mb-4">Reviews</h3>
-            {product.reviews.length > 0 ? (
-              product.reviews.map((review) => (
-                <div key={review._id} className="border-b py-4">
-                  <p className="font-semibold">{review.user.name}</p>
-                  <p className="text-gray-600">{review.comment}</p>
-                  <p className="text-yellow-500">{`${review.rating} stars`}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-600">No reviews yet.</p>
-            )}
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1 }}
+          >
+            <Link to="/products" className="text-blue-500 hover:underline">
+              Back to Products
+            </Link>
+          </motion.div>
         </div>
       </div>
     </div>

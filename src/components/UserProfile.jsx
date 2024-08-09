@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useUserProfile, useUpdateUserProfile } from "../hooks/useUser"; // Adjust the path if necessary
+import { useUserProfile, useUpdateUserProfile } from "../hooks/useUser";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 const UserProfile = () => {
   const { data, error, isLoading } = useUserProfile();
@@ -16,7 +17,6 @@ const UserProfile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [file, setFile] = useState(null);
 
-  // Update formData when data changes
   useEffect(() => {
     if (data) {
       setFormData({
@@ -24,18 +24,16 @@ const UserProfile = () => {
         email: data.email || "",
         mobile: data.mobile || "",
         profilePic: data.profilePic || "",
-        password: "", // Password should not be populated from the server
+        password: "",
       });
     }
   }, [data]);
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle file input changes
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     const file = e.target.files[0];
@@ -48,12 +46,10 @@ const UserProfile = () => {
     }
   };
 
-  // Toggle password visibility
   const handlePasswordToggle = () => {
     setShowPassword((prev) => !prev);
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const updatedFormData = new FormData();
@@ -71,36 +67,42 @@ const UserProfile = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="text-center py-4">Loading...</div>;
   if (error) {
     toast.error("Error fetching data");
-    return <div>Error fetching data</div>;
+    return <div className="text-center py-4">Error fetching data</div>;
   }
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold mb-4">User Profile</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Profile Picture:</label>
+    <motion.div
+      className="p-6 max-w-lg mx-auto bg-white shadow-lg rounded-lg"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-2xl font-bold mb-6 text-center">User Profile</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex items-center justify-center mb-4">
+          <label className="block text-gray-700 mr-4">Profile Picture:</label>
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="mt-1 block w-full text-sm text-gray-500"
+            className="block text-sm text-gray-500"
           />
-          {formData.profilePic ? (
-            <img
+        </div>
+        {formData.profilePic && (
+          <div className="flex justify-center mb-4">
+            <motion.img
               src={formData.profilePic}
               alt="Profile"
-              className="mt-2 w-24 h-24 object-cover rounded-full border"
+              className="w-32 h-32 object-cover rounded-full border border-gray-300"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5 }}
             />
-          ) : (
-            <div className="mt-2 text-gray-500">
-              No profile picture available
-            </div>
-          )}
-        </div>
+          </div>
+        )}
         <div className="mb-4">
           <label className="block text-gray-700">Username:</label>
           <input
@@ -108,7 +110,7 @@ const UserProfile = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
           />
         </div>
         <div className="mb-4">
@@ -118,7 +120,7 @@ const UserProfile = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
           />
         </div>
         <div className="mb-4">
@@ -128,7 +130,7 @@ const UserProfile = () => {
             name="mobile"
             value={formData.mobile}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
           />
         </div>
         <div className="mb-4">
@@ -138,24 +140,24 @@ const UserProfile = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
           />
           <button
             type="button"
             onClick={handlePasswordToggle}
-            className="mt-1 text-blue-500"
+            className="mt-1 text-blue-500 hover:text-blue-700"
           >
             {showPassword ? "Hide" : "Show"}
           </button>
         </div>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105"
         >
           Update Profile
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 };
 

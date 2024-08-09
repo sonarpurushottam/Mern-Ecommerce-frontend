@@ -13,7 +13,7 @@ import Navbar from "./components/Navbar";
 import DemoComp from "./components/DemoComp";
 
 import BrandPage from "./components/BrandPage";
-import ProductPage from "./pages/pages/ProductPage";
+import ProductPage from "./components/ProductPage";
 import Order from "./components/Order";
 
 const App = () => {
@@ -31,7 +31,7 @@ const App = () => {
           <Route path="/address" element={<Address />} />
           <Route path="/products-list" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDescription />} />
-      
+
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/user-profile" element={<UserProfile />} />

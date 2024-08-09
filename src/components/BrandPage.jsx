@@ -1,8 +1,9 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useBrands } from "../hooks/useBrands";
 import { useProductsByCategory } from "../hooks/useProducts";
 import BrandCarousel from "./BrandCarousel";
 import ProductGrid from "./ProductGrid";
+import { FaChevronRight } from "react-icons/fa";
 
 const BrandPage = () => {
   const { categoryId } = useParams();
@@ -31,11 +32,30 @@ const BrandPage = () => {
   }
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Brands</h1>
-      <BrandCarousel brands={brands} />
+    <div className="container mx-auto px-4 py-8">
+      {/* Breadcrumbs */}
+      <nav className="mb-4 text-sm text-gray-500">
+        <Link to="/" className="hover:text-gray-700">
+          Home
+        </Link>
+        <FaChevronRight className="inline mx-2 text-xs" />
+        <Link to="/categories" className="hover:text-gray-700">
+          Categories
+        </Link>
+        <FaChevronRight className="inline mx-2 text-xs" />
+        <span className="text-gray-700">Current Category</span>
+      </nav>
 
-      <h2 className="text-xl font-bold mt-8 mb-4">Products in this Category</h2>
+      {/* Brands Section */}
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Brands</h1>
+      <div className="mb-12">
+        <BrandCarousel brands={brands} />
+      </div>
+
+      {/* Products Section */}
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        Products in this Category
+      </h2>
       <ProductGrid products={products} />
     </div>
   );
