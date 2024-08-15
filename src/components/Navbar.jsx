@@ -19,7 +19,7 @@ import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useLogoutUser } from "../hooks/useUser"; 
+import { useLogoutUser } from "../hooks/useUser";
 export default function NextNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -31,7 +31,7 @@ export default function NextNavbar() {
     { name: "Login", path: "/login" },
     { name: "Address", path: "/address" },
     { name: "Products", path: "/products-list" },
-    { name: "Demo Comp", path: "/demo" },
+    { name: "Cart", path: "/cart" },
   ];
 
   useEffect(() => {
@@ -65,7 +65,6 @@ export default function NextNavbar() {
       toast.error("Failed to log out. Please try again."); // Show error message
     }
   };
-
 
   return (
     <Navbar shouldHideOnScroll isBordered onMenuOpenChange={setIsMenuOpen}>
