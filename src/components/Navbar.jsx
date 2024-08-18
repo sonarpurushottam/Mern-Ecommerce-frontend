@@ -3,7 +3,6 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  Input,
   DropdownItem,
   DropdownTrigger,
   Dropdown,
@@ -12,17 +11,37 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
+  Tooltip,
 } from "@nextui-org/react";
-// import { AcmeLogo } from "./AcmeLogo.jsx";
-// import { SearchIcon } from "./SearchIcon.jsx";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 import { useLogoutUser } from "../hooks/useUser";
+import { useQuery } from "@tanstack/react-query";
+import { FaCartShopping } from "react-icons/fa6";
+import { MdFavorite } from "react-icons/md";
+
+// Fetch function to get the cart item count
+const fetchCartItemCount = async () => {
+  const { data } = await axiosInstance.get("/cart/item-count");
+  return data.itemCount;
+};
+
+// Fetch function to get the wishlist count
+const fetchWishlistCount = async () => {
+  const { data } = await axiosInstance.get("/wishlist/count");
+  return data.count;
+};
+// Fetch function to get the user profile
+const fetchUserProfile = async () => {
+  const { data } = await axiosInstance.get("/users/profile");
+  return data;
+};
+
 export default function NextNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
 
   const menuItems = [
@@ -31,30 +50,32 @@ export default function NextNavbar() {
     { name: "Login", path: "/login" },
     { name: "Address", path: "/address" },
     { name: "Products", path: "/products-list" },
-    { name: "Cart", path: "/cart" },
-    { name: "Wishlist", path: "/wishlist" },
-    { name: "orders", path: "/orders" },
+    { name: "Orders", path: "/orders" },
   ];
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const { data } = await axios.get(
-          "http://localhost:5000/api/users/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        setUser(data);
-      } catch (error) {
-        console.error("Failed to fetch user profile:", error);
-      }
-    };
+  // Using React Query with object syntax to fetch cart item count
+  const { data: cartItemCount = 0, isLoading: isLoadingCart } = useQuery({
+    queryKey: ["cartItemCount"],
+    queryFn: fetchCartItemCount,
+    refetchInterval: 100, // Polling interval of 1 seconds
+    onError: () => toast.error("Failed to fetch cart item count"),
+  });
 
-    fetchUserProfile();
-  }, []);
+  // Using React Query to fetch wishlist count
+  const { data: wishlistCount = 0, isLoading: isLoadingWishlist } = useQuery({
+    queryKey: ["wishlistCount"],
+    queryFn: fetchWishlistCount,
+    refetchInterval: 100, // Polling interval of 1 seconds
+    onError: () => toast.error("Failed to fetch wishlist count"),
+  });
+
+  // Using React Query to fetch user profile
+  const { data: user, isLoading: error } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: fetchUserProfile,
+    onError: () => console.error("Failed to fetch user profile:", error),
+  });
+
   const mutation = useLogoutUser();
   const handleLogout = async () => {
     try {
@@ -67,6 +88,7 @@ export default function NextNavbar() {
       toast.error("Failed to log out. Please try again."); // Show error message
     }
   };
+
   const onEditProfile = () => {
     navigate("/edit-profile");
   };
@@ -79,8 +101,6 @@ export default function NextNavbar() {
           className="sm:hidden"
         />
         <NavbarBrand className="mr-4">
-          {/* <AcmeLogo /> */}
-          {/* <img src={logo} alt="logo" width={80} height={22} /> */}
           <p className="hidden sm:block font-bold text-inherit">ACME</p>
         </NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-3">
@@ -100,19 +120,28 @@ export default function NextNavbar() {
       </NavbarContent>
 
       <NavbarContent as="div" className="items-center" justify="end">
-        <Input
-          classNames={{
-            base: "max-w-full sm:max-w-[10rem] h-10",
-            mainWrapper: "h-full",
-            input: "text-small",
-            inputWrapper:
-              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-          }}
-          placeholder="Type to search..."
-          size="sm"
-          // startContent={<SearchIcon size={18} />}
-          type="search"
-        />
+        <Tooltip content="View Wishlist" placement="bottom" color="primary">
+          <NavLink
+            to="/wishlist"
+            className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
+          >
+            <MdFavorite />
+            {!isLoadingWishlist && wishlistCount > 0 && (
+              <span>{wishlistCount}</span>
+            )}
+          </NavLink>
+        </Tooltip>
+        <Tooltip content="View Cart" placement="bottom" color="primary">
+          <NavLink
+            to="/cart"
+            className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
+          >
+            {!isLoadingCart && cartItemCount > 0 && (
+              <span>{cartItemCount}</span>
+            )}
+            <FaCartShopping className="text-xl text-white drop-shadow-sm cursor-pointer" />
+          </NavLink>
+        </Tooltip>
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar
@@ -136,14 +165,9 @@ export default function NextNavbar() {
               </p>
             </DropdownItem>
             <DropdownItem key="edit-profile" onClick={onEditProfile}>
-              <p className="font-semibold">edit profile</p>
+              <p className="font-semibold">Edit Profile</p>
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="team_settings">Team Settings</DropdownItem>
-            <DropdownItem key="analytics">Analytics</DropdownItem>
-            <DropdownItem key="system">System</DropdownItem>
-            <DropdownItem key="configurations">Configurations</DropdownItem>
-            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
             <DropdownItem key="logout" color="danger" onClick={handleLogout}>
               Log Out
             </DropdownItem>

@@ -1,115 +1,70 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { AiOutlineDelete } from "react-icons/ai";
-import { useCart } from "../hooks/useCart";
+import useWishlist from "../hooks/useWishlist";
+import { AiFillDelete } from "react-icons/ai";
+import Breadcrumb from "./Breadcrumbs"; // Ensure this Breadcrumb component exists
 
-const Cart = () => {
-  const navigate = useNavigate();
-  const {
-    cart,
-    isLoading,
-    error,
-    handleRemoveFromCart,
-    handleUpdateQuantity,
-    handleCheckout,
-  } = useCart();
+const Wishlist = () => {
+  const { wishlist, loading, error, handleRemoveFromWishlist } = useWishlist();
 
-  if (isLoading)
-    return <div className="text-center text-gray-500">Loading...</div>;
-  if (error)
-    return <div className="text-center text-red-500">Error fetching cart</div>;
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading wishlist...</div>;
+  }
 
-  // Check if cart or cart.items is null/undefined or empty
-  if (!cart?.items?.length)
-    return <div className="text-center text-gray-500">Your cart is empty.</div>;
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
-  const totalAmount = cart.items.reduce(
-    (total, item) =>
-      total + (item.productId?.price || 0) * (item.quantity || 0),
-    0
-  );
-
-  const handleCheckoutClick = async () => {
-    const orderId = await handleCheckout();
-    if (orderId) {
-      navigate(`/order/${orderId}`);
-    }
-  };
+  if (!wishlist || wishlist.length === 0) {
+    return (
+      <div className="text-center text-gray-500">Your wishlist is empty.</div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-6">Your Cart</h2>
-      <ul className="divide-y divide-gray-200">
-        {cart.items.map((item) => (
-          <li
-            key={item._id}
-            className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 bg-white rounded-lg shadow-md mb-4"
-          >
-            <div className="flex items-start sm:items-center w-full">
-              <img
-                className="h-24 w-24 sm:h-32 sm:w-32 object-cover mr-4"
-                src={
-                  item.productId?.productImage?.[0] || "/default_image_url.png"
-                }
-                alt={item.productId?.name || "Product Image"}
-              />
-              <div className="flex-grow">
+    <div className="container mx-auto px-4 py-12">
+      {/* Breadcrumbs */}
+      <Breadcrumb />
+
+      <h2 className="text-3xl font-bold mb-6 text-center">My Wishlist</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {wishlist.map((item) => {
+          // Ensure item.productId is defined
+          const product = item.productId || {};
+          const productImage = product.productImage || [];
+          const productName = product.name || "Unknown Product";
+          const productPrice = product.price || "0";
+
+          return (
+            <div
+              key={item._id}
+              className="wishlist-item p-4 border rounded-lg shadow-md flex flex-col items-center"
+            >
+              <div className="relative w-full h-48 sm:h-56 md:h-64 mb-4">
+                <img
+                  src={productImage[0] || "/default_image_url.png"}
+                  alt={productName}
+                  className="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </div>
+              <div className="flex-grow text-center mb-4 px-2">
                 <h3 className="text-lg sm:text-xl font-semibold mb-2">
-                  {item.productId?.name || "Product Name"}
+                  {productName}
                 </h3>
-                <p className="text-sm text-gray-600 mb-1">
-                  Price: ₹{item.productId?.price || 0}
+                <p className="text-base sm:text-lg text-gray-700">
+                  Price: ₹{productPrice}
                 </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  Subtotal: ₹
-                  {(item.productId?.price * (item.quantity || 0)).toFixed(2)}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() =>
-                      handleUpdateQuantity(item._id, (item.quantity || 1) - 1)
-                    }
-                    className="bg-gray-200 px-3 py-1 rounded text-sm"
-                    disabled={item.quantity <= 1}
-                  >
-                    -
-                  </button>
-                  <span className="text-sm">{item.quantity || 0}</span>
-                  <button
-                    onClick={() =>
-                      handleUpdateQuantity(item._id, (item.quantity || 1) + 1)
-                    }
-                    className="bg-gray-200 px-3 py-1 rounded text-sm"
-                  >
-                    +
-                  </button>
-                </div>
               </div>
               <button
-                onClick={() => handleRemoveFromCart(item._id)}
-                className="mt-4 sm:mt-0 text-red-500 hover:text-red-600"
+                onClick={() => handleRemoveFromWishlist(item._id)}
+                className="mt-4 py-2 px-4 border border-red-500 rounded bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 ease-in-out flex items-center justify-center text-sm sm:text-base"
               >
-                <AiOutlineDelete size={20} />
+                <AiFillDelete className="mr-2" /> Remove
               </button>
             </div>
-          </li>
-        ))}
-      </ul>
-      <div className="text-right mt-6">
-        <p className="text-lg sm:text-xl font-semibold">
-          Total: ₹{totalAmount.toFixed(2)}
-        </p>
-      </div>
-      <div className="flex justify-end mt-6">
-        <button
-          onClick={handleCheckoutClick}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
-        >
-          Checkout
-        </button>
+          );
+        })}
       </div>
     </div>
   );
 };
 
-export default Cart;
+export default Wishlist;
