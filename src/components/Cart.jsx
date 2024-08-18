@@ -18,7 +18,9 @@ const Cart = () => {
     return <div className="text-center text-gray-500">Loading...</div>;
   if (error)
     return <div className="text-center text-red-500">Error fetching cart</div>;
-  if (!cart.items.length)
+
+  // Check if cart exists and has items
+  if (!cart || !cart.items || cart.items.length === 0)
     return <div className="text-center text-gray-500">Your cart is empty.</div>;
 
   const totalAmount = cart.items.reduce(

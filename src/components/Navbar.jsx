@@ -32,6 +32,8 @@ export default function NextNavbar() {
     { name: "Address", path: "/address" },
     { name: "Products", path: "/products-list" },
     { name: "Cart", path: "/cart" },
+    { name: "Wishlist", path: "/wishlist" },
+    { name: "orders", path: "/orders" },
   ];
 
   useEffect(() => {
@@ -64,6 +66,9 @@ export default function NextNavbar() {
       console.error("Error logging out:", error);
       toast.error("Failed to log out. Please try again."); // Show error message
     }
+  };
+  const onEditProfile = () => {
+    navigate("/edit-profile");
   };
 
   return (
@@ -129,6 +134,9 @@ export default function NextNavbar() {
               <p className="font-semibold">
                 {user ? user.email : "Loading..."}
               </p>
+            </DropdownItem>
+            <DropdownItem key="edit-profile" onClick={onEditProfile}>
+              <p className="font-semibold">edit profile</p>
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
             <DropdownItem key="team_settings">Team Settings</DropdownItem>

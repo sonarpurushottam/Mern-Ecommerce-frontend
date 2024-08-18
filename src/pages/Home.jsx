@@ -2,7 +2,7 @@
 // import headphone from "../assets/hero/headphone.png";
 // import smartwatch2 from "../assets/category/smartwatch2-removebg-preview.png";
 import Category from "./../components/Category";
-import Order from "./../components/Order";
+
 
 const Home = () => {
   console.log(localStorage.getItem("role")); // Should log the role if stored correctly
@@ -33,7 +33,7 @@ const Home = () => {
   return (
     <div className="container mx-auto p-4">
       <Category />
-      <Order />
+      
       {/* <HeroSection /> */}
     </div>
   );

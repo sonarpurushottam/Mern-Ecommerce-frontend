@@ -14,7 +14,9 @@ import DemoComp from "./components/DemoComp";
 
 import BrandPage from "./components/BrandPage";
 import ProductPage from "./components/ProductPage";
-import Order from "./components/Order";
+
+import OrderList from "./components/OrderList";
+import OrderDetails from "./components/OrderDetails";
 
 const App = () => {
   return (
@@ -34,11 +36,13 @@ const App = () => {
 
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/edit-profile" element={<UserProfile />} />
           <Route path="/demo" element={<DemoComp />} />
-          <Route path="/order/:id" element={<Order />} />
+
           <Route path="/brands/:categoryId" element={<BrandPage />} />
           <Route path="/products/:brandId" element={<ProductPage />} />
+          <Route path="/orders" element={<OrderList />} />
+          <Route path="/orders/:id" element={<OrderDetails />} />
         </Routes>
       </div>
     </Router>
