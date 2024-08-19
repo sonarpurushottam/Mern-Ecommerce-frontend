@@ -54,13 +54,13 @@ const ProductDescription = () => {
   return (
     <div className="container mx-auto p-6 md:p-12">
       {/* Breadcrumbs */}
-      <Breadcrumbs
+      {/* <Breadcrumbs
         crumbs={[
           { label: "Home", link: "/" },
           { label: "Products", link: "/products" },
           { label: product.name },
         ]}
-      />
+      /> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image Slider */}

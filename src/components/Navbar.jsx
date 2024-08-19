@@ -33,6 +33,7 @@ const fetchWishlistCount = async () => {
   const { data } = await axiosInstance.get("/wishlist/count");
   return data.count;
 };
+
 // Fetch function to get the user profile
 const fetchUserProfile = async () => {
   const { data } = await axiosInstance.get("/users/profile");
@@ -41,6 +42,9 @@ const fetchUserProfile = async () => {
 
 export default function NextNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("token") // Check if token exists
+  );
 
   const navigate = useNavigate();
 
@@ -48,16 +52,16 @@ export default function NextNavbar() {
     { name: "Home", path: "/" },
     { name: "Register", path: "/register" },
     { name: "Login", path: "/login" },
-    { name: "Address", path: "/address" },
-    { name: "Products", path: "/products-list" },
-    { name: "Orders", path: "/orders" },
+
+    // { name: "Products", path: "/products-list" },
   ];
 
   // Using React Query with object syntax to fetch cart item count
   const { data: cartItemCount = 0, isLoading: isLoadingCart } = useQuery({
     queryKey: ["cartItemCount"],
     queryFn: fetchCartItemCount,
-    refetchInterval: 100, // Polling interval of 1 seconds
+    enabled: isLoggedIn, // Only fetch when logged in
+    refetchInterval: 1000, // Polling interval of 1 second
     onError: () => toast.error("Failed to fetch cart item count"),
   });
 
@@ -65,15 +69,17 @@ export default function NextNavbar() {
   const { data: wishlistCount = 0, isLoading: isLoadingWishlist } = useQuery({
     queryKey: ["wishlistCount"],
     queryFn: fetchWishlistCount,
-    refetchInterval: 100, // Polling interval of 1 seconds
+    enabled: isLoggedIn, // Only fetch when logged in
+    refetchInterval: 1000, // Polling interval of 1 second
     onError: () => toast.error("Failed to fetch wishlist count"),
   });
 
   // Using React Query to fetch user profile
-  const { data: user, isLoading: error } = useQuery({
+  const { data: user } = useQuery({
     queryKey: ["userProfile"],
     queryFn: fetchUserProfile,
-    onError: () => console.error("Failed to fetch user profile:", error),
+    enabled: isLoggedIn, // Only fetch when logged in
+    onError: () => toast.error("Failed to fetch user profile"),
   });
 
   const mutation = useLogoutUser();
@@ -81,6 +87,7 @@ export default function NextNavbar() {
     try {
       await mutation.mutateAsync(); // Call the mutation
       localStorage.removeItem("token"); // Remove token from local storage
+      setIsLoggedIn(false); // Update login state
       navigate("/login"); // Redirect to login page
       toast.success("Logged out successfully!"); // Show success message
     } catch (error) {
@@ -91,6 +98,12 @@ export default function NextNavbar() {
 
   const onEditProfile = () => {
     navigate("/edit-profile");
+  };
+  const onOrder = () => {
+    navigate("/orders");
+  };
+  const onAddress = () => {
+    navigate("/address");
   };
 
   return (
@@ -119,61 +132,69 @@ export default function NextNavbar() {
         </NavbarContent>
       </NavbarContent>
 
-      <NavbarContent as="div" className="items-center" justify="end">
-        <Tooltip content="View Wishlist" placement="bottom" color="primary">
-          <NavLink
-            to="/wishlist"
-            className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
-          >
-            <MdFavorite />
-            {!isLoadingWishlist && wishlistCount > 0 && (
-              <span>{wishlistCount}</span>
-            )}
-          </NavLink>
-        </Tooltip>
-        <Tooltip content="View Cart" placement="bottom" color="primary">
-          <NavLink
-            to="/cart"
-            className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
-          >
-            {!isLoadingCart && cartItemCount > 0 && (
-              <span>{cartItemCount}</span>
-            )}
-            <FaCartShopping className="text-xl text-white drop-shadow-sm cursor-pointer" />
-          </NavLink>
-        </Tooltip>
-        <Dropdown placement="bottom-end">
-          <DropdownTrigger>
-            <Avatar
-              isBordered
-              as="button"
-              className="transition-transform"
-              color="secondary"
-              name={user ? user.username : "User"}
-              size="sm"
-              src={
-                user?.profilePic ||
-                "https://i.pravatar.cc/150?u=a042581f4e29026704d"
-              }
-            />
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
-            <DropdownItem key="profile" className="h-14 gap-2">
-              <p className="font-semibold">Signed in as</p>
-              <p className="font-semibold">
-                {user ? user.email : "Loading..."}
-              </p>
-            </DropdownItem>
-            <DropdownItem key="edit-profile" onClick={onEditProfile}>
-              <p className="font-semibold">Edit Profile</p>
-            </DropdownItem>
-            <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="logout" color="danger" onClick={handleLogout}>
-              Log Out
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </NavbarContent>
+      {isLoggedIn && (
+        <NavbarContent as="div" className="items-center" justify="end">
+          <Tooltip content="View Wishlist" placement="bottom" color="primary">
+            <NavLink
+              to="/wishlist"
+              className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
+            >
+              <MdFavorite />
+              {!isLoadingWishlist && wishlistCount > 0 && (
+                <span>{wishlistCount}</span>
+              )}
+            </NavLink>
+          </Tooltip>
+          <Tooltip content="View Cart" placement="bottom" color="primary">
+            <NavLink
+              to="/cart"
+              className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
+            >
+              {!isLoadingCart && cartItemCount > 0 && (
+                <span>{cartItemCount}</span>
+              )}
+              <FaCartShopping className="text-xl text-white drop-shadow-sm cursor-pointer" />
+            </NavLink>
+          </Tooltip>
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Avatar
+                isBordered
+                as="button"
+                className="transition-transform"
+                color="secondary"
+                name={user ? user.username : "User"}
+                size="sm"
+                src={
+                  user?.profilePic ||
+                  "https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                }
+              />
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Profile Actions" variant="flat">
+              <DropdownItem key="profile" className="h-14 gap-2">
+                <p className="font-semibold">Signed in as</p>
+                <p className="font-semibold">
+                  {user ? user.email : "Loading..."}
+                </p>
+              </DropdownItem>
+              <DropdownItem key="edit-profile" onClick={onEditProfile}>
+                <p className="font-semibold">Edit Profile</p>
+              </DropdownItem>
+              <DropdownItem key="order" onClick={onOrder}>
+                <p className="font-semibold">Order History</p>
+              </DropdownItem>
+              <DropdownItem key="address" onClick={onAddress}>
+                <p className="font-semibold">Manage Address</p>
+              </DropdownItem>
+              <DropdownItem key="settings">My Settings</DropdownItem>
+              <DropdownItem key="logout" color="danger" onClick={handleLogout}>
+                Log Out
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarContent>
+      )}
       <NavbarMenu>
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item.name}-${index}`}>

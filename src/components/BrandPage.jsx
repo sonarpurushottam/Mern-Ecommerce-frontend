@@ -34,7 +34,7 @@ const BrandPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumbs */}
-      <nav className="mb-4 text-sm text-gray-500">
+      {/* <nav className="mb-4 text-sm text-gray-500">
         <Link to="/" className="hover:text-gray-700">
           Home
         </Link>
@@ -44,7 +44,7 @@ const BrandPage = () => {
         </Link>
         <FaChevronRight className="inline mx-2 text-xs" />
         <span className="text-gray-700">Current Category</span>
-      </nav>
+      </nav> */}
 
       {/* Brands Section */}
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Brands</h1>

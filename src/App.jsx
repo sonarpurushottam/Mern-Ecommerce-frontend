@@ -18,10 +18,11 @@ import OrderDetails from "./components/OrderDetails";
 const App = () => {
   return (
     <Router>
-      <Navbar />
+
+        <Navbar />
 
       <div className="pt-10 lg:pt-4">
-        {" "}
+
         {/* Adjust the padding-top based on your Navbar height */}
         <Routes>
           <Route path="/" element={<Home />} />
@@ -47,3 +48,4 @@ const App = () => {
 };
 
 export default App;
+
