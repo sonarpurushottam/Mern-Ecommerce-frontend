@@ -43,13 +43,15 @@ const Login = () => {
           },
           onError: (error) => {
             toast.error(
-              error?.response?.data?.message || "Login failed. Please try again."
+              error?.response?.data?.message ||
+                "Login failed. Please try again."
             );
           },
         }
       );
     },
   });
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
