@@ -124,7 +124,7 @@ const OrderList = () => {
                   {order.status}
                 </span>
               </td>
-              <td className="p-4">${order.totalAmount.toFixed(2)}</td>
+              <td className="p-4">₹{order.totalAmount.toFixed(2)}</td>
             </tr>
           ))}
         </tbody>

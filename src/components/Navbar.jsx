@@ -114,7 +114,7 @@ export default function NextNavbar() {
           className="sm:hidden"
         />
         <NavbarBrand className="mr-4">
-          <p className="hidden sm:block font-bold text-inherit">ACME</p>
+          <p className="hidden sm:block font-bold text-inherit">Store</p>
         </NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-3">
           {menuItems.slice(0, 9).map((item) => (
@@ -187,7 +187,7 @@ export default function NextNavbar() {
               <DropdownItem key="address" onClick={onAddress}>
                 <p className="font-semibold">Manage Address</p>
               </DropdownItem>
-              <DropdownItem key="settings">My Settings</DropdownItem>
+            
               <DropdownItem key="logout" color="danger" onClick={handleLogout}>
                 Log Out
               </DropdownItem>

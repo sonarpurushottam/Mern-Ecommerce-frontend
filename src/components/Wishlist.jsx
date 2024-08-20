@@ -1,6 +1,6 @@
 import useWishlist from "../hooks/useWishlist";
 import { AiFillDelete } from "react-icons/ai";
-import Breadcrumb from "./Breadcrumbs"; // Ensure this Breadcrumb component exists
+// import Breadcrumb from "./Breadcrumbs"; 
 
 const Wishlist = () => {
   const { wishlist, loading, error, handleRemoveFromWishlist } = useWishlist();
@@ -22,7 +22,7 @@ const Wishlist = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Breadcrumbs */}
-      <Breadcrumb />
+      {/* <Breadcrumb /> */}
 
       <h2 className="text-3xl font-bold mb-6 text-center">My Wishlist</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

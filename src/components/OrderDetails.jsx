@@ -1,5 +1,4 @@
-
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useOrder,
   useUpdateOrderStatus,
@@ -14,6 +13,7 @@ const OrderDetails = () => {
   const { data: order, isLoading, error } = useOrder(id);
   const updateOrderStatus = useUpdateOrderStatus();
   const deleteOrder = useDeleteOrder();
+  const navigate = useNavigate();
 
   const handleStatusChange = (newStatus) => {
     updateOrderStatus.mutate(
@@ -28,7 +28,10 @@ const OrderDetails = () => {
 
   const handleDeleteOrder = () => {
     deleteOrder.mutate(id, {
-      onSuccess: () => toast.success("Order deleted"),
+      onSuccess: () => {
+        toast.success("Order deleted");
+        navigate("/orders");
+      },
       onError: (error) => toast.error(`Error deleting order: ${error.message}`),
     });
   };
@@ -77,7 +80,7 @@ const OrderDetails = () => {
           </span>
         </p>
         <p>
-          <strong className="font-medium">Total Amount:</strong> $
+          <strong className="font-medium">Total Amount:</strong> ₹
           {order.totalAmount.toFixed(2)}
         </p>
 
@@ -102,7 +105,7 @@ const OrderDetails = () => {
                   {item.quantity}
                 </p>
                 <p>
-                  <strong className="font-medium">Price:</strong> $
+                  <strong className="font-medium">Price:</strong> ₹
                   {item.productId.price.toFixed(2)}
                 </p>
               </div>
@@ -117,12 +120,7 @@ const OrderDetails = () => {
           >
             Cancel Order
           </button>
-          <button
-            onClick={() => handleStatusChange("Shipped")}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition"
-          >
-            Mark as Shipped
-          </button>
+         
           <button
             onClick={handleDeleteOrder}
             className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"

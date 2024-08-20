@@ -133,9 +133,9 @@ const ProductDescription = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 1 }}
           >
-            <Link to="/products" className="text-blue-500 hover:underline">
+            {/* <Link to="/products" className="text-blue-500 hover:underline">
               Back to Products
-            </Link>
+            </Link> */}
           </motion.div>
         </div>
       </div>

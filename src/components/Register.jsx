@@ -12,7 +12,7 @@ const Register = () => {
   const { mutate, isLoading } = useUserRegister();
 
   const validationSchema = Yup.object({
-    username: Yup.string().required("Username is required"),
+    username: Yup.string().required("Full Name is required"),
     email: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
@@ -124,15 +124,15 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Username Field */}
+            {/*  Full Name Field */}
             <div>
               <label className="block text-gray-700 text-sm md:text-base font-medium mb-2">
-                Username
+                Full Name
               </label>
               <input
                 type="text"
                 name="username"
-                placeholder="Enter your username"
+                placeholder="Enter your Full Name"
                 value={formik.values.username}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}

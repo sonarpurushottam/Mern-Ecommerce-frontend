@@ -11,7 +11,7 @@ export const useAddToCart = () => {
       return addToCart(productId, token);
     },
     onError: () => {
-      toast.error("Error adding to cart");
+      toast.error("Login First");
     },
     onSuccess: () => {
       toast.success("Product added to cart");

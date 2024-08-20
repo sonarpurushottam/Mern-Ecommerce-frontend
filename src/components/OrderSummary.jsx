@@ -48,7 +48,7 @@ const OrderSummary = ({ orders }) => {
         </div>
         <div className="p-4 bg-gray-100 rounded-lg shadow-sm">
           <h4 className="text-lg font-medium">Total Spent</h4>
-          <p className="text-xl font-bold">${totalSpent.toFixed(2)}</p>
+          <p className="text-xl font-bold">₹{totalSpent.toFixed(2)}</p>
         </div>
         <div className="p-4 bg-gray-100 rounded-lg shadow-sm col-span-full">
           <h4 className="text-lg font-medium">Most Recent Order Date</h4>
