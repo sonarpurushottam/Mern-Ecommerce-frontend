@@ -1,6 +1,6 @@
 // src/hooks/useOrder.js
 import { useState, useEffect } from "react";
-import { fetchOrder } from "../api/orderApi"; // Adjust the path as needed
+import { fetchOrder } from "../api/orderApi"; 
 import { toast } from "react-hot-toast";
 
 const useOrder = (orderId) => {

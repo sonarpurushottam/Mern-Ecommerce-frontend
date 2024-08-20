@@ -14,6 +14,7 @@ import BrandPage from "./components/BrandPage";
 import ProductPage from "./components/ProductPage";
 import OrderList from "./components/OrderList";
 import OrderDetails from "./components/OrderDetails";
+import Checkout from "./pages/Checkout";
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/products/:brandId" element={<ProductPage />} />
           <Route path="/orders" element={<OrderList />} />
           <Route path="/orders/:id" element={<OrderDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </div>
     </Router>

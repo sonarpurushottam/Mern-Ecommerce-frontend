@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
+import axiosInstance from "../api/axiosInstance";
+import ConfirmationModal from "./ConfirmationModal";
 
 const Address = () => {
   const [addresses, setAddresses] = useState([]);
@@ -16,6 +17,8 @@ const Address = () => {
   const [editing, setEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
 
   useEffect(() => {
     fetchAddresses();
@@ -23,14 +26,10 @@ const Address = () => {
 
   const fetchAddresses = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/addresses", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const { data } = await axiosInstance.get("/addresses");
       setAddresses(data);
     } catch (error) {
-      toast.error(error.response.data.message || "Failed to fetch addresses");
+      toast.error(error.response?.data?.message || "Failed to fetch addresses");
     }
   };
 
@@ -47,22 +46,15 @@ const Address = () => {
     setLoading(true);
     try {
       if (editing) {
-        await axios.put(
-          `http://localhost:5000/api/addresses/${editingId}`,
-          newAddress,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        await axiosInstance.put(`/addresses/${editingId}`, newAddress);
         toast.success("Address updated successfully!");
       } else {
-        await axios.post("http://localhost:5000/api/addresses", newAddress, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        if (newAddress.isDefault) {
+          await axiosInstance.patch("/addresses/set-default", {
+            addressId: null,
+          });
+        }
+        await axiosInstance.post("/addresses", newAddress);
         toast.success("Address added successfully!");
       }
       setNewAddress({
@@ -77,7 +69,7 @@ const Address = () => {
       setEditingId(null);
       fetchAddresses();
     } catch (error) {
-      toast.error(error.response.data.message || "Failed to save address");
+      toast.error(error.response?.data?.message || "Failed to save address");
     } finally {
       setLoading(false);
     }
@@ -96,20 +88,32 @@ const Address = () => {
     setEditingId(address._id);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this address?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/addresses/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        toast.success("Address deleted successfully!");
-        fetchAddresses();
-      } catch (error) {
-        toast.error(error.response.data.message || "Failed to delete address");
-      }
+  const handleDeleteClick = (id) => {
+    setAddressToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!addressToDelete) return;
+    try {
+      await axiosInstance.delete(`/addresses/${addressToDelete}`);
+      toast.success("Address deleted successfully!");
+      fetchAddresses(); // Refresh the address list
+    } catch (error) {
+      console.error(
+        "Error deleting address:",
+        error.response ? error.response.data : error.message
+      );
+      toast.error(error.response?.data?.message || "Failed to delete address");
+    } finally {
+      setIsModalOpen(false);
+      setAddressToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsModalOpen(false);
+    setAddressToDelete(null);
   };
 
   return (
@@ -237,50 +241,38 @@ const Address = () => {
         {addresses.map((address) => (
           <motion.div
             key={address._id}
-            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            className="bg-white shadow-md rounded p-4"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
           >
-            <p className="mb-2">
-              <strong>Street:</strong> {address.street}
-            </p>
-            <p className="mb-2">
-              <strong>City:</strong> {address.city}
-            </p>
-            <p className="mb-2">
-              <strong>State:</strong> {address.state}
-            </p>
-            <p className="mb-2">
-              <strong>Postal Code:</strong> {address.postalCode}
-            </p>
-            <p className="mb-2">
-              <strong>Country:</strong> {address.country}
-            </p>
-            <p className="mb-2">
+            <h2 className="text-lg font-bold mb-2">{address.street}</h2>
+            <p>{`${address.city}, ${address.state}, ${address.postalCode}, ${address.country}`}</p>
+            <p className="mt-2">
               <strong>Default:</strong> {address.isDefault ? "Yes" : "No"}
             </p>
-            <div className="flex items-center justify-between">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            <div className="flex mt-4">
+              <button
                 onClick={() => handleEdit(address)}
-                className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded mr-2"
               >
                 Edit
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleDelete(address._id)}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              </button>
+              <button
+                onClick={() => handleDeleteClick(address._id)}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
               >
                 Delete
-              </motion.button>
+              </button>
             </div>
           </motion.div>
         ))}
       </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this address?"
+      />
     </div>
   );
 };
