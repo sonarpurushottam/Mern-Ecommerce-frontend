@@ -19,6 +19,7 @@ const useLogin = () => {
       localStorage.setItem("profilePic", data.profilePic); // Optional
 
       // window.location.reload(); // Reload the page after login
+      window.location.replace(window.location.href);
     },
     onError: (error) => {
       toast.error(error.response?.data.message || "Login failed");
