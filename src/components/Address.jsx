@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "../api/axiosInstance";
@@ -209,7 +209,7 @@ const Address = () => {
             required
           />
         </div>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
             htmlFor="isDefault"
@@ -224,7 +224,7 @@ const Address = () => {
             onChange={handleInputChange}
             className="mr-2 leading-tight"
           />
-        </div>
+        </div> */}
         <div className="flex items-center justify-between">
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -247,9 +247,9 @@ const Address = () => {
           >
             <h2 className="text-lg font-bold mb-2">{address.street}</h2>
             <p>{`${address.city}, ${address.state}, ${address.postalCode}, ${address.country}`}</p>
-            <p className="mt-2">
+            {/* <p className="mt-2">
               <strong>Default:</strong> {address.isDefault ? "Yes" : "No"}
-            </p>
+            </p> */}
             <div className="flex mt-4">
               <button
                 onClick={() => handleEdit(address)}

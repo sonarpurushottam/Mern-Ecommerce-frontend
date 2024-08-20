@@ -31,7 +31,7 @@ const ProductDescription = () => {
     }
 
     addToCart(product._id);
-    toast.success("Added to cart");
+    // toast.success("Added to cart");
   };
 
   const handleAddToWishlist = () => {
@@ -42,7 +42,7 @@ const ProductDescription = () => {
     }
 
     addToWishlist(product._id);
-    toast.success("Added to wishlist");
+    // toast.success("Added to wishlist");
   };
 
   if (isLoading) return <div>Loading...</div>;

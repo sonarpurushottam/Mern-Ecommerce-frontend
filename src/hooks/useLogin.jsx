@@ -17,6 +17,8 @@ const useLogin = () => {
       localStorage.setItem("mobile", data.mobile); // Optional
       localStorage.setItem("role", data.role); // Optional
       localStorage.setItem("profilePic", data.profilePic); // Optional
+
+      window.location.reload(); // Reload the page after login
     },
     onError: (error) => {
       toast.error(error.response?.data.message || "Login failed");
@@ -27,4 +29,3 @@ const useLogin = () => {
 };
 
 export default useLogin;
-

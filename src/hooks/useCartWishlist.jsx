@@ -28,7 +28,7 @@ export const useAddToWishlist = () => {
       return addToWishlist(productId, token);
     },
     onError: () => {
-      toast.error("Error adding to wishlist");
+      toast.error("Login first");
     },
     onSuccess: () => {
       toast.success("Product added to wishlist");

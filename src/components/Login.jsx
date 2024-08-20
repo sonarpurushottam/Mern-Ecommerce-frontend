@@ -4,11 +4,20 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import useLogin from "../hooks/useLogin";
 import { motion } from "framer-motion";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
   const { mutate, isLoading } = useLogin();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/"); // or any protected route
+    }
+  }, [navigate]);
 
   const validationSchema = Yup.object({
     emailOrMobile: Yup.string().required("Email or Mobile is required"),
@@ -29,7 +38,13 @@ const Login = () => {
         { emailOrMobile: values.emailOrMobile, password: values.password },
         {
           onSuccess: () => {
+            // toast.success("Login successful!");
             navigate("/");
+          },
+          onError: (error) => {
+            toast.error(
+              error?.response?.data?.message || "Login failed. Please try again."
+            );
           },
         }
       );

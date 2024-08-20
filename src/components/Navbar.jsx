@@ -21,6 +21,7 @@ import { useLogoutUser } from "../hooks/useUser";
 import { useQuery } from "@tanstack/react-query";
 import { FaCartShopping } from "react-icons/fa6";
 import { MdFavorite } from "react-icons/md";
+import { IoHome } from "react-icons/io5";
 
 // Fetch function to get the cart item count
 const fetchCartItemCount = async () => {
@@ -48,13 +49,11 @@ export default function NextNavbar() {
 
   const navigate = useNavigate();
 
-  const menuItems = [
-    { name: "Home", path: "/" },
-    { name: "Register", path: "/register" },
-    { name: "Login", path: "/login" },
-
-    // { name: "Products", path: "/products-list" },
-  ];
+  // const menuItems = [
+  //   // { name: "Home", path: "/" },
+  //   { name: "Register", path: "/register" },
+  //   { name: "Login", path: "/login" },
+  // ];
 
   // Using React Query with object syntax to fetch cart item count
   const { data: cartItemCount = 0, isLoading: isLoadingCart } = useQuery({
@@ -109,14 +108,16 @@ export default function NextNavbar() {
   return (
     <Navbar shouldHideOnScroll isBordered onMenuOpenChange={setIsMenuOpen}>
       <NavbarContent justify="start">
-        <NavbarMenuToggle
+        {/* <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           className="sm:hidden"
-        />
+        /> */}
         <NavbarBrand className="mr-4">
-          <p className="hidden sm:block font-bold text-inherit">Store</p>
+          <NavLink to="/">
+            <p className="hidden sm:block font-bold text-inherit">Store</p>
+          </NavLink>
         </NavbarBrand>
-        <NavbarContent className="hidden sm:flex gap-3">
+        {/* <NavbarContent className="hidden sm:flex gap-3">
           {menuItems.slice(0, 9).map((item) => (
             <NavbarItem key={item.name}>
               <NavLink
@@ -129,10 +130,19 @@ export default function NextNavbar() {
               </NavLink>
             </NavbarItem>
           ))}
-        </NavbarContent>
+        </NavbarContent> */}
       </NavbarContent>
-
-      {isLoggedIn && (
+      <NavbarContent as="div" className="items-center" justify="end">
+        <Tooltip content="Go Home" placement="bottom" color="primary">
+          <NavLink
+            to="/"
+            className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
+          >
+            <IoHome />
+          </NavLink>
+        </Tooltip>
+      </NavbarContent>
+      {isLoggedIn ? (
         <NavbarContent as="div" className="items-center" justify="end">
           <Tooltip content="View Wishlist" placement="bottom" color="primary">
             <NavLink
@@ -187,15 +197,24 @@ export default function NextNavbar() {
               <DropdownItem key="address" onClick={onAddress}>
                 <p className="font-semibold">Manage Address</p>
               </DropdownItem>
-            
+
               <DropdownItem key="logout" color="danger" onClick={handleLogout}>
                 Log Out
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </NavbarContent>
+      ) : (
+        <NavbarContent justify="end">
+          <NavLink to="/login" className="btn btn-secondary mx-3">
+            Login
+          </NavLink>
+          <NavLink to="/register" className="btn btn-info mx-3">
+            Register
+          </NavLink>
+        </NavbarContent>
       )}
-      <NavbarMenu>
+      {/* <NavbarMenu>
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item.name}-${index}`}>
             <NavLink
@@ -213,7 +232,7 @@ export default function NextNavbar() {
             </NavLink>
           </NavbarMenuItem>
         ))}
-      </NavbarMenu>
+      </NavbarMenu> */}
     </Navbar>
   );
 }

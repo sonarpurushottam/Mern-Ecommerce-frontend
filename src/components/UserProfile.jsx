@@ -124,7 +124,7 @@ const UserProfile = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700 mb-2">Username:</label>
+          <label className="block text-gray-700 mb-2">Full Name:</label>
           <input
             type="text"
             name="username"

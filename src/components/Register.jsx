@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaUpload, FaEye, FaEyeSlash } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
+// import toast, { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import useUserRegister from "../hooks/useRegister";
@@ -47,14 +47,14 @@ const Register = () => {
       }
 
       mutate(formData, {
-        onSuccess: (data) => {
-          toast.success(data.message || "Registration successful!");
+        onSuccess: () => {
+          // toast.success(data.message || "Registration successful!");
           formik.resetForm();
           setPreview(null);
           navigate("/login");
         },
-        onError: (error) => {
-          toast.error(error.response?.data?.message || "Registration failed");
+        onError: () => {
+          // toast.error(error.response?.data?.message || "Registration failed");
         },
       });
     },
@@ -72,7 +72,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      <Toaster />
+      {/* <Toaster /> */}
       {/* Sidebar */}
       <div className="w-full md:w-1/3 bg-blue-500 text-white flex items-center justify-center p-8">
         <div className="text-center">

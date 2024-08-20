@@ -1,9 +1,9 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useBrands } from "../hooks/useBrands";
 import { useProductsByCategory } from "../hooks/useProducts";
 import BrandCarousel from "./BrandCarousel";
 import ProductGrid from "./ProductGrid";
-import { FaChevronRight } from "react-icons/fa";
+// import { FaChevronRight } from "react-icons/fa";
 
 const BrandPage = () => {
   const { categoryId } = useParams();
@@ -47,7 +47,7 @@ const BrandPage = () => {
       </nav> */}
 
       {/* Brands Section */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Brands</h1>
+      {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">Brands</h1> */}
       <div className="mb-12">
         <BrandCarousel brands={brands} />
       </div>
