@@ -30,7 +30,6 @@ const Home = () => {
   //     "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eaque reiciendis",
   //   bgColor: "#2dcc6f",
   // };
-  window.location.reload();
   return (
     <div className="container mx-auto p-4">
       <Category />
