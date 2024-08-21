@@ -1,7 +1,4 @@
-// src/api/brandApi.js
-
 import axiosInstance from "./axiosInstance";
-
 // Fetch brands by category
 export const fetchBrandsByCategory = async (categoryId) => {
   try {

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { formatDate } from "../utils/formatDate"; // Ensure this is correctly imported
+import { formatDate } from "../utils/formatDate";
 
 const OrderSummary = ({ orders }) => {
   const totalOrders = orders.length;

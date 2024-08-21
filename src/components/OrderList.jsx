@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useAllOrders } from "../hooks/useOrders"; // Adjust the path as needed
+import { useAllOrders } from "../hooks/useOrders"; 
 import { Link } from "react-router-dom";
-import { formatDate } from "../utils/formatDate"; // Adjust the path as needed
-import OrderSummary from "./OrderSummary"; // Adjust the path as needed
+import { formatDate } from "../utils/formatDate"; 
+import OrderSummary from "./OrderSummary"; 
 import { motion } from "framer-motion";
 
 const OrderList = () => {

@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance"; // Adjust the path as needed
+import axiosInstance from "./axiosInstance"; 
 
 // Fetch all orders for the authenticated user
 export const fetchAllOrders = async () => {

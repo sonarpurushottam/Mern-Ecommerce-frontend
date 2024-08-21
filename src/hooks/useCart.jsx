@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -67,7 +66,7 @@ export const useCart = () => {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (shippingAddress) => {
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
@@ -98,7 +97,7 @@ export const useCart = () => {
       return;
     }
 
-    const checkoutData = { userId, items, totalAmount };
+    const checkoutData = { userId, items, totalAmount, shippingAddress };
 
     try {
       const data = await checkout(checkoutData);

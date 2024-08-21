@@ -1,4 +1,3 @@
-// src/api/cartApi.js
 import axiosInstance from "./axiosInstance"; 
 
 export const fetchCart = async () => {

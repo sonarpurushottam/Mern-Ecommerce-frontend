@@ -1,4 +1,3 @@
-// src/api/wishlistApi.js
 import axiosInstance from "./axiosInstance";
 
 // Fetch wishlist items

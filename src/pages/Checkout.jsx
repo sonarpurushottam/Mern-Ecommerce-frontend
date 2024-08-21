@@ -1,86 +1,4 @@
-// // src/pages/Checkout.jsx
-// import React, { useState, useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { useCart } from "../hooks/useCart";
-// import axiosInstance from "../api/axiosInstance";
-
-// const Checkout = () => {
-//   const navigate = useNavigate();
-//   const { cart, handleCheckout, clearCart } = useCart();
-//   const [selectedAddress, setSelectedAddress] = useState(null);
-//   const [addresses, setAddresses] = useState([]);
-
-//   useEffect(() => {
-//     fetchAddresses();
-//   }, []);
-
-//   const fetchAddresses = async () => {
-//     try {
-//       const { data } = await axiosInstance.get("/addresses");
-//       setAddresses(data);
-//     } catch (error) {
-//       console.error("Failed to fetch addresses", error);
-//     }
-//   };
-
-//   const handleAddressChange = (e) => {
-//     setSelectedAddress(e.target.value);
-//   };
-
-//   const handleCheckoutClick = async () => {
-//     if (!selectedAddress) {
-//       alert("Please select an address");
-//       return;
-//     }
-
-//     const orderId = await handleCheckout(selectedAddress);
-//     if (orderId) {
-//       await clearCart(); // Clear the cart after successful checkout
-//       navigate(`/orders`);
-//     }
-//   };
-
-//   return (
-//     <div className="container mx-auto px-4 py-6">
-//       <h1 className="text-2xl font-bold mb-4">Checkout</h1>
-//       <div className="mb-6">
-//         <h2 className="text-xl font-semibold mb-2">Select Address</h2>
-//         <select
-//           onChange={handleAddressChange}
-//           className="w-full p-2 border rounded"
-//         >
-//           <option value="">Select an address</option>
-//           {addresses.map((address) => (
-//             <option key={address._id} value={address._id}>
-//               {address.street}, {address.city}
-//             </option>
-//           ))}
-//         </select>
-//       </div>
-//       <div className="mb-6">
-//         <h2 className="text-xl font-semibold mb-2">Cart Items</h2>
-//         <ul>
-//           {cart.items.map((item) => (
-//             <li key={item._id} className="mb-4">
-//               <div>{item.productId?.name || "Product Name"}</div>
-//               <div>Price: ₹{item.productId?.price || 0}</div>
-//               <div>Quantity: {item.quantity || 0}</div>
-//             </li>
-//           ))}
-//         </ul>
-//       </div>
-//       <button
-//         onClick={handleCheckoutClick}
-//         className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
-//       >
-//         Confirm Order
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default Checkout;
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import axiosInstance from "../api/axiosInstance";
@@ -131,8 +49,9 @@ const Checkout = () => {
     setLoading(true);
     try {
       if (newAddress.isDefault) {
-        // Clear default flag from all addresses before adding a new default
-        await axiosInstance.patch('/addresses/set-default', { addressId: null });
+        await axiosInstance.patch("/addresses/set-default", {
+          addressId: null,
+        });
       }
       await axiosInstance.post("/addresses", newAddress);
       fetchAddresses();
@@ -158,10 +77,14 @@ const Checkout = () => {
       return;
     }
 
-    const orderId = await handleCheckout(selectedAddress);
-    if (orderId) {
-      await clearCart(); // Clear the cart after successful checkout
-      navigate(`/orders`);
+    try {
+      const orderId = await handleCheckout(selectedAddress);
+      if (orderId) {
+        await clearCart(); // Clear the cart after successful checkout
+        navigate(`/orders`);
+      }
+    } catch (error) {
+      console.error("Checkout failed", error);
     }
   };
 
@@ -199,7 +122,10 @@ const Checkout = () => {
           className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
         >
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="street">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="street"
+            >
               Street
             </label>
             <input
@@ -213,7 +139,10 @@ const Checkout = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="city">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="city"
+            >
               City
             </label>
             <input
@@ -227,7 +156,10 @@ const Checkout = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="state">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="state"
+            >
               State
             </label>
             <input
@@ -241,7 +173,10 @@ const Checkout = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="postalCode">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="postalCode"
+            >
               Postal Code
             </label>
             <input
@@ -255,7 +190,10 @@ const Checkout = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="country">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="country"
+            >
               Country
             </label>
             <input
@@ -306,7 +244,7 @@ const Checkout = () => {
           ))}
         </ul>
       </div>
-      
+
       <button
         onClick={handleCheckoutClick}
         className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"

@@ -1,11 +1,12 @@
+
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useOrder,
   useUpdateOrderStatus,
   useDeleteOrder,
-} from "../hooks/useOrders"; // Adjust the path as needed
+} from "../hooks/useOrders";
 import { toast } from "react-hot-toast";
-import { formatDate } from "../utils/formatDate"; // Adjust the path as needed
+import { formatDate } from "../utils/formatDate";
 import { motion } from "framer-motion";
 
 const OrderDetails = () => {
@@ -83,6 +84,25 @@ const OrderDetails = () => {
           <strong className="font-medium">Total Amount:</strong> ₹
           {order.totalAmount.toFixed(2)}
         </p>
+
+        <div className="mt-6">
+          <h3 className="text-2xl font-semibold mb-4">Shipping Address:</h3>
+          <p>
+            <strong className="font-medium">Street:</strong> {order.shippingAddress.street}
+          </p>
+          <p>
+            <strong className="font-medium">City:</strong> {order.shippingAddress.city}
+          </p>
+          <p>
+            <strong className="font-medium">State:</strong> {order.shippingAddress.state}
+          </p>
+          <p>
+            <strong className="font-medium">Postal Code:</strong> {order.shippingAddress.postalCode}
+          </p>
+          <p>
+            <strong className="font-medium">Country:</strong> {order.shippingAddress.country}
+          </p>
+        </div>
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">Items Purchased:</h3>
         <ul className="space-y-4">

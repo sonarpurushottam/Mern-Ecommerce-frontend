@@ -1,8 +1,7 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 import { useProductsByBrand } from "../hooks/useProducts";
 import ProductGrid from "./ProductGrid";
-import Breadcrumbs from "./Breadcrumbs"; // Import the updated Breadcrumbs component
+// import Breadcrumbs from "./Breadcrumbs"; 
 
 const ProductPage = () => {
   const { brandId } = useParams();

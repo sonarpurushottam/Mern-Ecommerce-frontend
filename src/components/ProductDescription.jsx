@@ -1,5 +1,4 @@
-import React from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate,  } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,7 +7,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useProductById } from "../hooks/useProducts";
 import { useAddToCart, useAddToWishlist } from "../hooks/useCartWishlist";
-import Breadcrumbs from "./Breadcrumbs";
+// import Breadcrumbs from "./Breadcrumbs";
 
 const ProductDescription = () => {
   const { id } = useParams();

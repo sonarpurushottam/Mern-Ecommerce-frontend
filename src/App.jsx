@@ -9,7 +9,6 @@ import Wishlist from "./components/Wishlist";
 import Cart from "./components/Cart";
 import UserProfile from "./components/UserProfile";
 import Navbar from "./components/Navbar";
-import DemoComp from "./components/DemoComp";
 import BrandPage from "./components/BrandPage";
 import ProductPage from "./components/ProductPage";
 import OrderList from "./components/OrderList";
@@ -19,12 +18,10 @@ import Checkout from "./pages/Checkout";
 const App = () => {
   return (
     <Router>
+      <Navbar />
 
-        <Navbar />
-
-      <div className="pt-10 lg:pt-4">
-
-        {/* Adjust the padding-top based on your Navbar height */}
+      <div>
+        { /* className="pt-10 lg:pt-4" Adjust the padding-top based on your Navbar height */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
@@ -36,7 +33,6 @@ const App = () => {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/edit-profile" element={<UserProfile />} />
-          <Route path="/demo" element={<DemoComp />} />
 
           <Route path="/brands/:categoryId" element={<BrandPage />} />
           <Route path="/products/:brandId" element={<ProductPage />} />
@@ -50,4 +46,3 @@ const App = () => {
 };
 
 export default App;
-

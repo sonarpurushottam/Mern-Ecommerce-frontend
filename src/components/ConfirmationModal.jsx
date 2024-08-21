@@ -1,6 +1,4 @@
-// src/components/ConfirmationModal.jsx
 
-import React from 'react';
 import { motion } from 'framer-motion';
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, message }) => {

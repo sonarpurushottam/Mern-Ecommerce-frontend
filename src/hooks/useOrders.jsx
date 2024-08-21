@@ -5,7 +5,7 @@ import {
   createOrder,
   updateOrderStatus,
   deleteOrder,
-} from '../api/orderApi'; // Adjust the path as needed
+} from '../api/orderApi'; 
 
 // Fetch all orders
 export const useAllOrders = () => {

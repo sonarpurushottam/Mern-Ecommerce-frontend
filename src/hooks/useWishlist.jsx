@@ -1,4 +1,3 @@
-// src/hooks/useWishlist.js
 import { useState, useEffect } from "react";
 import { fetchWishlist, removeFromWishlist } from "../api/wishlistApi";
 import { toast } from "react-hot-toast";

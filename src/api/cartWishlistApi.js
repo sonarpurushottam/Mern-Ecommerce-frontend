@@ -1,5 +1,4 @@
 import axiosInstance from "./axiosInstance";
-
 // Add product to cart
 export const addToCart = async (productId, token) => {
   await axiosInstance.post(
