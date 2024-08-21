@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { addToCart, addToWishlist } from "../api/cartWishlistApi"; // Adjust the path as needed
+import { addToCart, addToWishlist } from "../api/cartWishlistApi";
 import toast from "react-hot-toast";
 
 // Custom hook to add product to cart
