@@ -1,23 +1,23 @@
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
-import useLogin from "../hooks/useLogin";
-import { motion } from "framer-motion";
-import { Toaster, toast } from "react-hot-toast";
-import { useEffect } from "react";
+import { useEffect } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { NavLink, useNavigate } from 'react-router-dom';
+import useLogin from '../hooks/useLogin';
+import { motion } from 'framer-motion';
+import { Toaster, toast } from 'react-hot-toast';
 
 const Login = () => {
   const navigate = useNavigate();
   const { mutate, isLoading } = useLogin();
 
-  // Redirect if already logged in
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/"); // or any protected route
-    }
-  }, [navigate]);
+  // // Redirect if already logged in
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     navigate("/"); // Redirect to the home or protected route
+  //   }
+  // }, [navigate]);
 
   const validationSchema = Yup.object({
     emailOrMobile: Yup.string().required("Email or Mobile is required"),
@@ -38,7 +38,6 @@ const Login = () => {
         { emailOrMobile: values.emailOrMobile, password: values.password },
         {
           onSuccess: () => {
-            // toast.success("Login successful!");
             navigate("/");
           },
           onError: (error) => {
@@ -52,7 +51,6 @@ const Login = () => {
     },
   });
 
- 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <Toaster />
@@ -151,9 +149,9 @@ const Login = () => {
             </motion.button>
           </div>
           <div>
-            <p>Don't have an account?</p>
+            <p className="text-center">Don't have an account?</p>
             <NavLink to="/register">
-              <button className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+              <button className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
                 Register
               </button>
             </NavLink>

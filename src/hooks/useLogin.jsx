@@ -17,8 +17,8 @@ const useLogin = () => {
       localStorage.setItem("mobile", data.mobile); // Optional
       localStorage.setItem("role", data.role); // Optional
       localStorage.setItem("profilePic", data.profilePic); // Optional
-      // window.history.go(0);
-      window.location.reload(); // Reload the page after login
+      window.history.go(0);
+      // window.location.reload(); // Reload the page after login
       // window.location.replace(window.location.href);
     },
     onError: (error) => {

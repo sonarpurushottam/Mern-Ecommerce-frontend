@@ -15,7 +15,8 @@ const useLogoutUser = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("redirectPath"); // Clear redirect path on logout
         toast.success("Logged out successfully!");
-        navigate("/login"); // Redirect to login page
+        navigate("/login");
+        window.location.reload(); // Reload the page after login
       },
       onError: () => {
         toast.error("Failed to log out. Please try again.");

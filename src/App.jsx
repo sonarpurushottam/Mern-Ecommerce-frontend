@@ -8,17 +8,17 @@ import ProductDescription from "./components/ProductDescription";
 import Wishlist from "./components/Wishlist";
 import Cart from "./components/Cart";
 import UserProfile from "./components/UserProfile";
-import Navbar from "./components/Navbar";
 import BrandPage from "./components/BrandPage";
 import ProductPage from "./components/ProductPage";
 import OrderList from "./components/OrderList";
 import OrderDetails from "./components/OrderDetails";
 import Checkout from "./pages/Checkout";
+import { NavbarDemo } from "./components/NavbarDemo";
 
 const App = () => {
   return (
     <Router>
-      <Navbar />
+      <NavbarDemo />
 
       <div>
         { /* className="pt-10 lg:pt-4" Adjust the padding-top based on your Navbar height */}
