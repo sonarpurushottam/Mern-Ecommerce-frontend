@@ -1,4 +1,4 @@
-import { useParams, useNavigate,  } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -7,14 +7,12 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useProductById } from "../hooks/useProducts";
 import { useAddToCart, useAddToWishlist } from "../hooks/useCartWishlist";
-// import Breadcrumbs from "./Breadcrumbs";
 
 const ProductDescription = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const { data: product, isLoading, isError, error } = useProductById(id);
-
   const { mutate: addToCart } = useAddToCart();
   const { mutate: addToWishlist } = useAddToWishlist();
 
@@ -25,23 +23,21 @@ const ProductDescription = () => {
   const handleAddToCart = () => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to cart");
-      navigate("/login");
+      navigate("/login", { state: { redirectTo: `/product/${id}` } });
       return;
     }
 
     addToCart(product._id);
-    // toast.success("Added to cart");
   };
 
   const handleAddToWishlist = () => {
     if (!isLoggedIn()) {
       toast.error("You need to be logged in to add to wishlist");
-      navigate("/login");
+      navigate("/login", { state: { redirectTo: `/product/${id}` } });
       return;
     }
 
     addToWishlist(product._id);
-    // toast.success("Added to wishlist");
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -52,17 +48,7 @@ const ProductDescription = () => {
 
   return (
     <div className="container mx-auto p-6 md:p-12">
-      {/* Breadcrumbs */}
-      {/* <Breadcrumbs
-        crumbs={[
-          { label: "Home", link: "/" },
-          { label: "Products", link: "/products" },
-          { label: product.name },
-        ]}
-      /> */}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Image Slider */}
         <div className="relative w-full h-96 md:h-[40rem]">
           <Swiper
             modules={[Pagination, A11y]}
@@ -84,8 +70,6 @@ const ProductDescription = () => {
             ))}
           </Swiper>
         </div>
-
-        {/* Product Details */}
         <div className="flex flex-col justify-center">
           <motion.h2
             className="text-4xl font-bold mb-4 text-gray-800"
@@ -127,15 +111,6 @@ const ProductDescription = () => {
               Add to Wishlist
             </motion.button>
           </div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1 }}
-          >
-            {/* <Link to="/products" className="text-blue-500 hover:underline">
-              Back to Products
-            </Link> */}
-          </motion.div>
         </div>
       </div>
     </div>

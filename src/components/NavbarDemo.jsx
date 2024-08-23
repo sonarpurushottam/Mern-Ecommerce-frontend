@@ -18,16 +18,13 @@ export function NavbarDemo() {
   return (
     <div className="relative w-full flex items-center justify-center">
       <Navbar className="top-2" />
-      <p className="text-black dark:text-white">
-        The Navbar will show on top of the page
-      </p>
     </div>
   );
 }
 
 function Navbar({ className }) {
   const [active, setActive] = useState(null);
-  const { isLoggedIn, logout } = useAuth(); // Use the auth context
+  const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
 
   // Fetch function to get the user profile
@@ -106,17 +103,13 @@ function Navbar({ className }) {
           </NavLink>
         ) : (
           <>
-            <MenuItem setActive={setActive} active={active} item="Pricing">
+            <MenuItem setActive={setActive} active={active} item="User Menu">
               <div className="flex flex-col space-y-4 text-sm text-cyan-600">
-                <NavLink to="/cart">Cart</NavLink>
-                <NavLink to="/wishlist">Wishlist</NavLink>
-                <NavLink to="/edit-profile">Edit Profile</NavLink>
                 <NavLink to="/orders">Orders</NavLink>
                 <NavLink to="/address">Manage Address</NavLink>
                 <Button onClick={handleLogout}>Logout</Button>
               </div>
             </MenuItem>
-
             <Tooltip content="View Wishlist" placement="bottom" color="primary">
               <NavLink
                 to="/wishlist"
@@ -140,16 +133,19 @@ function Navbar({ className }) {
                 <FaCartShopping className="text-xl text-white drop-shadow-sm cursor-pointer" />
               </NavLink>
             </Tooltip>
-
-            <Avatar
-              isBordered
-              as="button"
-              className="transition-transform"
-              color="secondary"
-              name={user ? user.username : "User"}
-              size="sm"
-              src={user?.profilePic}
-            />
+            <Tooltip content="edit profile" placement="bottom" color="primary">
+              <NavLink to="/edit-profile">
+                <Avatar
+                  isBordered
+                  as="button"
+                  className="transition-transform"
+                  color="secondary"
+                  name={user ? user.username : "User"}
+                  size="sm"
+                  src={user?.profilePic}
+                />
+              </NavLink>
+            </Tooltip>
           </>
         )}
       </Menu>

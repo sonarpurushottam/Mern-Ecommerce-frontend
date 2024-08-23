@@ -2,22 +2,18 @@ import { useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import useLogin from '../hooks/useLogin';
 import { motion } from 'framer-motion';
 import { Toaster, toast } from 'react-hot-toast';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { mutate, isLoading } = useLogin();
 
-  // // Redirect if already logged in
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     navigate("/"); // Redirect to the home or protected route
-  //   }
-  // }, [navigate]);
+  // Extract the redirectTo from the location state or default to home
+  const redirectTo = location.state?.redirectTo || "/";
 
   const validationSchema = Yup.object({
     emailOrMobile: Yup.string().required("Email or Mobile is required"),
@@ -37,8 +33,12 @@ const Login = () => {
       mutate(
         { emailOrMobile: values.emailOrMobile, password: values.password },
         {
-          onSuccess: () => {
-            navigate("/");
+          onSuccess: (data) => {
+            // Assuming the token is returned in data.token
+            if (data.token) {
+              localStorage.setItem("token", data.token); // Store the token
+              navigate(redirectTo); // Redirect after successful login
+            }
           },
           onError: (error) => {
             toast.error(
@@ -51,6 +51,13 @@ const Login = () => {
     },
   });
 
+  // Check if user is already logged in
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate(redirectTo); // If logged in, redirect to the desired page
+    }
+  }, [navigate, redirectTo]);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <Toaster />
@@ -62,7 +69,6 @@ const Login = () => {
       >
         <h2 className="text-2xl font-bold text-center">Login</h2>
         <form onSubmit={formik.handleSubmit} className="space-y-6">
-          {/* Email or Mobile Field */}
           <div>
             <label
               htmlFor="emailOrMobile"
@@ -90,8 +96,6 @@ const Login = () => {
               </div>
             )}
           </div>
-
-          {/* Password Field */}
           <div>
             <label
               htmlFor="password"
@@ -133,30 +137,19 @@ const Login = () => {
               </div>
             )}
           </div>
-
-          {/* Submit Button */}
-          <div>
-            <motion.button
-              type="submit"
-              className={`w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={isLoading}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isLoading ? "Logging in..." : "Login"}
-            </motion.button>
-          </div>
-          <div>
-            <p className="text-center">Don't have an account?</p>
-            <NavLink to="/register">
-              <button className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
-                Register
-              </button>
-            </NavLink>
-          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 transition duration-300"
+          >
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
         </form>
+        <div className="text-center mt-4">
+          <NavLink to="/register" className="text-indigo-600">
+            Don't have an account? Register
+          </NavLink>
+        </div>
       </motion.div>
     </div>
   );
