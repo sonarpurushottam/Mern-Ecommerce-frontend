@@ -14,6 +14,7 @@ import OrderList from "./components/OrderList";
 import OrderDetails from "./components/OrderDetails";
 import Checkout from "./pages/Checkout";
 import { NavbarDemo } from "./components/NavbarDemo";
+import Category from "./components/Category";
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/address" element={<Address />} />
+          <Route path="/category" element={<Category />} />
           <Route path="/products-list" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDescription />} />
 

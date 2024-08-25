@@ -1,8 +1,9 @@
+import LandingPage from "./LandingPage";
+
 const Home = () => {
   return (
-    <div>
-      {/* <Login/> */}
-      
+    <div style={{ margin: 0 , padding:0 }}>
+      <LandingPage />
     </div>
   );
 };
