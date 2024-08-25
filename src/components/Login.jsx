@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import useLogin from '../hooks/useLogin';
-import { motion } from 'framer-motion';
-import { Toaster, toast } from 'react-hot-toast';
+import { useEffect } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import useLogin from "../hooks/useLogin";
+import { motion } from "framer-motion";
+import { Toaster, toast } from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -57,6 +57,15 @@ const Login = () => {
       navigate(redirectTo); // If logged in, redirect to the desired page
     }
   }, [navigate, redirectTo]);
+
+  const handleDemoLogin = () => {
+    formik.setValues({
+      emailOrMobile: "demo@gmail.com", // Set default email for demo viewer
+      password: "demo1234", // Set default password for demo viewer
+      showPassword: false,
+    });
+    formik.handleSubmit(); // Automatically submit the form
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -145,6 +154,14 @@ const Login = () => {
             {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
+        <div className="text-center mt-4">
+          <button
+            onClick={handleDemoLogin}
+            className="text-indigo-600 hover:underline"
+          >
+            Login as Demo Viewer
+          </button>
+        </div>
         <div className="text-center mt-4">
           <NavLink to="/register" className="text-indigo-600">
             Don't have an account? Register
