@@ -22,11 +22,11 @@ const LandingPage = () => {
       <TestimonialsSection />
       <NewsletterSection />
       <FAQSection />
-      <PartnersSection />
-      <CTASection />
-      <GallerySection />
-      <TeamSection />
-      <BlogSection />
+      {/* <PartnersSection /> */}
+      {/* <CTASection /> */}
+      {/* <GallerySection /> */}
+      {/* <TeamSection /> */}
+      {/* <BlogSection /> */}
       <Footer />
     </>
   );

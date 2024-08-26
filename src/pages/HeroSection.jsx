@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-
+import p4 from "../assets/p4.jpg";
 const HeroSection = () => {
   return (
     <section
       className="relative h-screen bg-cover bg-center"
-      style={{ backgroundImage: "url('/path-to-your-image.jpg')" }}
+      style={{ backgroundImage: `url(${p4})` }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="container mx-auto h-full flex flex-col justify-center items-center text-center text-white relative z-10">

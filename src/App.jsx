@@ -22,7 +22,6 @@ const App = () => {
       <NavbarDemo />
 
       <div className="pt-10 sm:pt-12 md:pt-16 lg:pt-20">
-        {/*  Adjust the padding-top based on your Navbar height */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
