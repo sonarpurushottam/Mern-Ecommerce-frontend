@@ -60,8 +60,8 @@ const Login = () => {
 
   const handleDemoLogin = () => {
     formik.setValues({
-      emailOrMobile: "demo@gmail.com", // Set default email for demo viewer
-      password: "demo1234", // Set default password for demo viewer
+      emailOrMobile: "user@gmail.com", // Set default email for demo viewer
+      password: "user1234", // Set default password for demo viewer
       showPassword: false,
     });
     formik.handleSubmit(); // Automatically submit the form
@@ -155,6 +155,7 @@ const Login = () => {
           </button>
         </form>
         <div className="text-center mt-4">
+          <p className="text-red-600">You can also use demo account without register</p>
           <button
             onClick={handleDemoLogin}
             className="text-indigo-600 hover:underline"
