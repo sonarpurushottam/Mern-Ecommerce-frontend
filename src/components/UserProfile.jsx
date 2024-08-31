@@ -6,8 +6,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   FaUserCircle,
   FaFileUpload,
-  FaEye,
-  FaEyeSlash,
+  // FaEye,
+  // FaEyeSlash,
   FaSpinner,
 } from "react-icons/fa";
 
@@ -23,7 +23,7 @@ const UserProfile = () => {
     profilePic: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
   const [file, setFile] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -56,9 +56,9 @@ const UserProfile = () => {
     }
   };
 
-  const handlePasswordToggle = () => {
-    setShowPassword((prev) => !prev);
-  };
+  // const handlePasswordToggle = () => {
+  //   setShowPassword((prev) => !prev);
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -153,7 +153,7 @@ const UserProfile = () => {
             className="block w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="relative">
+        {/* <div className="relative">
           <label className="block text-gray-700 mb-2">Password:</label>
           <input
             type={showPassword ? "text" : "password"}
@@ -169,7 +169,7 @@ const UserProfile = () => {
           >
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
-        </div>
+        </div> */}
         <motion.button
           type="submit"
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105 flex items-center justify-center"

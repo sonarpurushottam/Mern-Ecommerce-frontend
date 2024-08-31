@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Menu, MenuItem } from "./ui/navbar-menu";
 import { cn } from "../lib/utils";
 import { NavLink, useNavigate } from "react-router-dom";
-// import Category from "./Category";
+import Category from "./Category";
 import { useLogoutUser } from "../hooks/useUser";
 import { Avatar, Button, Tooltip } from "@nextui-org/react";
 import toast from "react-hot-toast";
@@ -41,34 +41,34 @@ function Navbar({ className }) {
   });
 
   // Fetch function to get the cart item count
-  const fetchCartItemCount = async () => {
-    const { data } = await axiosInstance.get("/cart/item-count");
-    return data.itemCount;
-  };
+  // const fetchCartItemCount = async () => {
+  //   const { data } = await axiosInstance.get("/cart/item-count");
+  //   return data.itemCount;
+  // };
 
   // Fetch function to get the wishlist count
-  const fetchWishlistCount = async () => {
-    const { data } = await axiosInstance.get("/wishlist/count");
-    return data.count;
-  };
+  // const fetchWishlistCount = async () => {
+  //   const { data } = await axiosInstance.get("/wishlist/count");
+  //   return data.count;
+  // };
 
   // Using React Query to fetch cart item count
-  const { data: cartItemCount = 0, isLoading: isLoadingCart } = useQuery({
-    queryKey: ["cartItemCount"],
-    queryFn: fetchCartItemCount,
-    enabled: isLoggedIn, // Only fetch when logged in
-    refetchInterval: 1000, // Polling interval of 1 second
-    onError: () => toast.error("Failed to fetch cart item count"),
-  });
+  // const { data: cartItemCount = 0, isLoading: isLoadingCart } = useQuery({
+  //   queryKey: ["cartItemCount"],
+  //   queryFn: fetchCartItemCount,
+  //   enabled: isLoggedIn, // Only fetch when logged in
+  //   refetchInterval: 1000, // Polling interval of 1 second
+  //   onError: () => toast.error("Failed to fetch cart item count"),
+  // });
 
   // Using React Query to fetch wishlist count
-  const { data: wishlistCount = 0, isLoading: isLoadingWishlist } = useQuery({
-    queryKey: ["wishlistCount"],
-    queryFn: fetchWishlistCount,
-    enabled: isLoggedIn, // Only fetch when logged in
-    refetchInterval: 1000, // Polling interval of 1 second
-    onError: () => toast.error("Failed to fetch wishlist count"),
-  });
+  // const { data: wishlistCount = 0, isLoading: isLoadingWishlist } = useQuery({
+  //   queryKey: ["wishlistCount"],
+  //   queryFn: fetchWishlistCount,
+  //   enabled: isLoggedIn, // Only fetch when logged in
+  //   refetchInterval: 1000, // Polling interval of 1 second
+  //   onError: () => toast.error("Failed to fetch wishlist count"),
+  // });
 
   const mutation = useLogoutUser();
 
@@ -92,11 +92,11 @@ function Navbar({ className }) {
         <NavLink to="/">
           <MenuItem item="Home" />
         </NavLink>
-        {/* <MenuItem setActive={setActive} active={active} item="Categories ">
+        <MenuItem setActive={setActive} active={active} item="Categories ">
           <div>
             <Category />
           </div>
-        </MenuItem> */}
+        </MenuItem>
         {!isLoggedIn ? (
           <NavLink to="/login">
             <MenuItem item="Login" />
@@ -116,9 +116,9 @@ function Navbar({ className }) {
                 className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
               >
                 <MdFavorite />
-                {!isLoadingWishlist && wishlistCount > 0 && (
+                {/* {!isLoadingWishlist && wishlistCount > 0 && (
                   <span>{wishlistCount}</span>
-                )}
+                )} */}
               </NavLink>
             </Tooltip>
 
@@ -127,9 +127,9 @@ function Navbar({ className }) {
                 to="/cart"
                 className="bg-gradient-to-r from-primary to-secondary transition-all duration-200 text-white py-1 px-4 rounded-full flex items-center group ml-2 mr-2"
               >
-                {!isLoadingCart && cartItemCount > 0 && (
+                {/* {!isLoadingCart && cartItemCount > 0 && (
                   <span>{cartItemCount}</span>
-                )}
+                )} */}
                 <FaCartShopping className="text-xl text-white drop-shadow-sm cursor-pointer" />
               </NavLink>
             </Tooltip>
