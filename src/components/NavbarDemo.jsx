@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Menu, MenuItem } from "./ui/navbar-menu";
 import { cn } from "../lib/utils";
 import { NavLink, useNavigate } from "react-router-dom";
-import Category from "./Category";
+// import Category from "./Category";
 import { useLogoutUser } from "../hooks/useUser";
 import { Avatar, Button, Tooltip } from "@nextui-org/react";
 import toast from "react-hot-toast";
@@ -92,11 +92,11 @@ function Navbar({ className }) {
         <NavLink to="/">
           <MenuItem item="Home" />
         </NavLink>
-        <MenuItem setActive={setActive} active={active} item="Categories ">
+        {/* <MenuItem setActive={setActive} active={active} item="Categories ">
           <div>
             <Category />
           </div>
-        </MenuItem>
+        </MenuItem> */}
         {!isLoggedIn ? (
           <NavLink to="/login">
             <MenuItem item="Login" />
