@@ -34,7 +34,6 @@ const Login = () => {
         { emailOrMobile: values.emailOrMobile, password: values.password },
         {
           onSuccess: (data) => {
-            // Assuming the token is returned in data.token
             if (data.token) {
               localStorage.setItem("token", data.token); // Store the token
               navigate(redirectTo); // Redirect after successful login
@@ -64,7 +63,7 @@ const Login = () => {
       password: "user1234", // Set default password for demo viewer
       showPassword: false,
     });
-    formik.handleSubmit(); // Automatically submit the form
+    formik.submitForm(); // Submit the form using formik's submit method
   };
 
   return (
@@ -136,6 +135,7 @@ const Login = () => {
                   )
                 }
                 className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+                aria-label={formik.values.showPassword ? "Hide password" : "Show password"}
               >
                 {formik.values.showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -149,13 +149,43 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 transition duration-300"
+            className={`w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-md transition duration-300 ${
+              isLoading ? "cursor-not-allowed bg-indigo-400" : "hover:bg-indigo-700"
+            }`}
           >
-            {isLoading ? "Logging in..." : "Login"}
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <svg
+                  className="animate-spin h-5 w-5 mr-3 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 000 16 8 8 0 100-16z"
+                  ></path>
+                </svg>
+                Logging in...
+              </span>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
         <div className="text-center mt-4">
-          <p className="text-red-600">You can also use demo account without register</p>
+          <p className="text-red-600">
+            You can also use the demo account without registering
+          </p>
           <button
             onClick={handleDemoLogin}
             className="text-indigo-600 hover:underline"
@@ -164,7 +194,7 @@ const Login = () => {
           </button>
         </div>
         <div className="text-center mt-4">
-          <NavLink to="/register" className="text-indigo-600">
+          <NavLink to="/register" className="text-indigo-600 hover:underline">
             Don't have an account? Register
           </NavLink>
         </div>
