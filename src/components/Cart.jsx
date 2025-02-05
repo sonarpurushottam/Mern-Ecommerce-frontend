@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useCart } from "../hooks/useCart";
+import { motion } from "framer-motion";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -13,17 +14,15 @@ const Cart = () => {
   } = useCart();
 
   if (isLoading)
-    return <div className="text-center text-gray-500">Loading...</div>;
+    return <div className="text-center text-gray-400 text-lg">Loading...</div>;
   if (error)
-    return <div className="text-center text-red-500">Error fetching cart</div>;
+    return <div className="text-center text-red-500 text-lg">Error fetching cart</div>;
 
-  // Check if cart exists and has items
   if (!cart || !cart.items || cart.items.length === 0)
-    return <div className="text-center text-gray-500">Your cart is empty.</div>;
+    return <div className="text-center text-gray-400 text-lg">Your cart is empty.</div>;
 
   const totalAmount = cart.items.reduce(
-    (total, item) =>
-      total + (item.productId?.price || 0) * (item.quantity || 0),
+    (total, item) => total + (item.productId?.price || 0) * (item.quantity || 0),
     0
   );
 
@@ -32,78 +31,72 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-6">Your Cart</h2>
-      <ul className="divide-y divide-gray-200">
+    <motion.div
+      className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-2xl shadow-xl border border-gray-700"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-3xl font-bold text-center mb-6">Shopping Cart</h2>
+      <ul className="space-y-4">
         {cart.items.map((item) => (
-          <li
+          <motion.li
             key={item._id}
-            className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 bg-white rounded-lg shadow-md mb-4"
+            className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-sm"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="flex items-start sm:items-center w-full">
-              <img
-                className="h-24 w-24 sm:h-32 sm:w-32 object-cover mr-4"
-                src={
-                  item.productId?.productImage?.[0] || "/default_image_url.png"
-                }
-                alt={item.productId?.name || "Product Image"}
-              />
-              <div className="flex-grow">
-                <h3 className="text-lg sm:text-xl font-semibold mb-2">
-                  {item.productId?.name || "Product Name"}
-                </h3>
-                <p className="text-sm text-gray-600 mb-1">
-                  Price: ₹{item.productId?.price || 0}
-                </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  Subtotal: ₹
-                  {(item.productId?.price * (item.quantity || 0)).toFixed(2)}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() =>
-                      handleUpdateQuantity(item._id, (item.quantity || 1) - 1)
-                    }
-                    className="bg-gray-200 px-3 py-1 rounded text-sm"
-                    disabled={item.quantity <= 1}
-                  >
-                    -
-                  </button>
-                  <span className="text-sm">{item.quantity || 0}</span>
-                  <button
-                    onClick={() =>
-                      handleUpdateQuantity(item._id, (item.quantity || 1) + 1)
-                    }
-                    className="bg-gray-200 px-3 py-1 rounded text-sm"
-                  >
-                    +
-                  </button>
-                </div>
+            <div className="flex items-center gap-4 w-1/2">
+              <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-gray-600">
+                <img
+                  className="h-full w-full object-contain"
+                  src={item.productId?.productImage?.[0] || "/default_image_url.png"}
+                  alt={item.productId?.name || "Product Image"}
+                />
               </div>
+              <div>
+                <h3 className="text-lg font-semibold">{item.productId?.name || "Product Name"}</h3>
+                <p className="text-gray-400">Price: ₹{item.productId?.price || 0}</p>
+                <p className="text-gray-400">Subtotal: ₹{(item.productId?.price * (item.quantity || 0)).toFixed(2)}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleUpdateQuantity(item._id, (item.quantity || 1) - 1)}
+                className="px-3 py-1 bg-gray-700 rounded-lg hover:bg-gray-600 transition"
+                disabled={item.quantity <= 1}
+              >
+                -
+              </button>
+              <span className="text-lg font-semibold">{item.quantity || 0}</span>
+              <button
+                onClick={() => handleUpdateQuantity(item._id, (item.quantity || 1) + 1)}
+                className="px-3 py-1 bg-gray-700 rounded-lg hover:bg-gray-600 transition"
+              >
+                +
+              </button>
               <button
                 onClick={() => handleRemoveFromCart(item._id)}
-                className="mt-4 sm:mt-0 text-red-500 hover:text-red-600"
+                className="text-red-400 hover:text-red-500"
               >
-                <AiOutlineDelete size={20} />
+                <AiOutlineDelete size={22} />
               </button>
             </div>
-          </li>
+          </motion.li>
         ))}
       </ul>
-      <div className="text-right mt-6">
-        <p className="text-lg sm:text-xl font-semibold">
-          Total: ₹{totalAmount.toFixed(2)}
-        </p>
-      </div>
-      <div className="flex justify-end mt-6">
-        <button
+      <div className="flex justify-between items-center mt-6 border-t border-gray-700 pt-4">
+        <p className="text-xl font-bold">Total: ₹{totalAmount.toFixed(2)}</p>
+        <motion.button
           onClick={handleCheckoutClick}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-500 transition-transform transform hover:scale-105"
+          whileTap={{ scale: 0.95 }}
         >
           Proceed to Checkout
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
