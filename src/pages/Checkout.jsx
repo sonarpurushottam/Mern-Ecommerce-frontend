@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import axiosInstance from "../api/axiosInstance";
+import { motion } from "framer-motion";
+import { FiMapPin, FiPlus, FiX } from "react-icons/fi";
+import { toast } from "react-hot-toast";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -64,8 +67,10 @@ const Checkout = () => {
         isDefault: false,
       });
       setShowAddAddressForm(false);
+      toast.success("Address added successfully!");
     } catch (error) {
       console.error("Failed to add address", error);
+      toast.error("Failed to add address");
     } finally {
       setLoading(false);
     }
@@ -73,185 +78,222 @@ const Checkout = () => {
 
   const handleCheckoutClick = async () => {
     if (!selectedAddress) {
-      alert("Please select an address");
+      toast.error("Please select an address");
       return;
     }
 
     try {
       const orderId = await handleCheckout(selectedAddress);
       if (orderId) {
-        await clearCart(); // Clear the cart after successful checkout
+        await clearCart();
         navigate(`/orders`);
+        toast.success("Order placed successfully!");
       }
     } catch (error) {
       console.error("Checkout failed", error);
+      toast.error("Checkout failed");
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-4">Checkout</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-4xl mx-auto p-8 bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-3xl shadow-2xl"
+    >
+      <h1 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        Checkout
+      </h1>
 
       {/* Address Selection */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Select Address</h2>
-        <select
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-4">
+          <FiMapPin className="text-xl text-purple-400" />
+          <h2 className="text-xl font-semibold">Shipping Address</h2>
+        </div>
+
+        <motion.select
           value={selectedAddress}
           onChange={handleAddressChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          whileHover={{ scale: 1.01 }}
         >
           <option value="">Select an address</option>
           {addresses.map((address) => (
             <option key={address._id} value={address._id}>
-              {address.street}, {address.city}
+              {address.street}, {address.city}, {address.state} -{" "}
+              {address.postalCode}
             </option>
           ))}
-        </select>
-        <button
+        </motion.select>
+
+        <motion.button
           onClick={() => setShowAddAddressForm(!showAddAddressForm)}
-          className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
+          className="mt-4 flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl transition-all duration-300"
+          whileHover={{ scale: 1.02 }}
         >
+          <FiPlus className="text-lg" />
           {showAddAddressForm ? "Cancel" : "Add New Address"}
-        </button>
+        </motion.button>
       </div>
 
       {/* Add New Address Form */}
       {showAddAddressForm && (
-        <form
+        <motion.form
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
           onSubmit={handleAddAddressSubmit}
-          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+          className="bg-gray-800 p-6 rounded-xl shadow-lg mb-8"
         >
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="street"
-            >
-              Street
-            </label>
-            <input
-              type="text"
-              id="street"
-              name="street"
-              value={newAddress.street}
-              onChange={handleAddAddressChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                Street
+              </label>
+              <input
+                type="text"
+                name="street"
+                value={newAddress.street}
+                onChange={handleAddAddressChange}
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                City
+              </label>
+              <input
+                type="text"
+                name="city"
+                value={newAddress.city}
+                onChange={handleAddAddressChange}
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                State
+              </label>
+              <input
+                type="text"
+                name="state"
+                value={newAddress.state}
+                onChange={handleAddAddressChange}
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                Postal Code
+              </label>
+              <input
+                type="text"
+                name="postalCode"
+                value={newAddress.postalCode}
+                onChange={handleAddAddressChange}
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                Country
+              </label>
+              <input
+                type="text"
+                name="country"
+                value={newAddress.country}
+                onChange={handleAddAddressChange}
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+            {/* <div className="flex items-center gap-2 mt-4">
+              <input
+                type="checkbox"
+                id="isDefault"
+                name="isDefault"
+                checked={newAddress.isDefault}
+                onChange={handleAddAddressChange}
+                className="w-4 h-4 text-purple-500 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+              />
+              <label htmlFor="isDefault" className="text-sm text-gray-300">
+                Set as default address
+              </label>
+            </div> */}
           </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="city"
-            >
-              City
-            </label>
-            <input
-              type="text"
-              id="city"
-              name="city"
-              value={newAddress.city}
-              onChange={handleAddAddressChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="state"
-            >
-              State
-            </label>
-            <input
-              type="text"
-              id="state"
-              name="state"
-              value={newAddress.state}
-              onChange={handleAddAddressChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="postalCode"
-            >
-              Postal Code
-            </label>
-            <input
-              type="text"
-              id="postalCode"
-              name="postalCode"
-              value={newAddress.postalCode}
-              onChange={handleAddAddressChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="country"
-            >
-              Country
-            </label>
-            <input
-              type="text"
-              id="country"
-              name="country"
-              value={newAddress.country}
-              onChange={handleAddAddressChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          {/* <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isDefault">
-              Set as Default
-            </label>
-            <input
-              type="checkbox"
-              id="isDefault"
-              name="isDefault"
-              checked={newAddress.isDefault}
-              onChange={handleAddAddressChange}
-              className="mr-2 leading-tight"
-            />
-          </div> */}
-          <div className="flex items-center justify-between">
-            <button
+          <div className="mt-6 flex justify-end">
+            <motion.button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-all duration-300 flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
               disabled={loading}
             >
-              {loading ? "Adding..." : "Add Address"}
-            </button>
+              {loading ? (
+                <>
+                  <span className="animate-spin">🌀</span>
+                  Adding...
+                </>
+              ) : (
+                "Save Address"
+              )}
+            </motion.button>
           </div>
-        </form>
+        </motion.form>
       )}
 
       {/* Cart Items */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Cart Items</h2>
-        <ul>
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+        <div className="space-y-4">
           {cart.items.map((item) => (
-            <li key={item._id} className="mb-4">
-              <div>{item.productId?.name || "Product Name"}</div>
-              <div>Price: ₹{item.productId?.price || 0}</div>
-              <div>Quantity: {item.quantity || 0}</div>
-            </li>
+            <motion.div
+              key={item._id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center justify-between p-4 bg-gray-800 rounded-xl"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-lg bg-gray-700 overflow-hidden">
+                  <img
+                    src={
+                      item.productId?.productImage?.[0] ||
+                      "/default_image_url.png"
+                    }
+                    alt={item.productId?.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium">{item.productId?.name}</h3>
+                  <p className="text-sm text-gray-400">
+                    ₹{item.productId?.price} x {item.quantity}
+                  </p>
+                </div>
+              </div>
+              <p className="font-medium">
+                ₹{(item.productId?.price * item.quantity).toFixed(2)}
+              </p>
+            </motion.div>
           ))}
-        </ul>
+        </div>
       </div>
 
-      <button
-        onClick={handleCheckoutClick}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
-      >
-        Confirm Order
-      </button>
-    </div>
+      <div className="border-t border-gray-700 pt-6">
+        <motion.button
+          onClick={handleCheckoutClick}
+          className="w-full py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          Confirm Order
+        </motion.button>
+      </div>
+    </motion.div>
   );
 };
 

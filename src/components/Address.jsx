@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "../api/axiosInstance";
-import ConfirmationModal from "./ConfirmationModal";
+import { FaEdit, FaTrash } from "react-icons/fa"; // Using React Icons
+import ConfirmationModal from "./ConfirmationModal"; // Updated Modal
 
 const Address = () => {
   const [addresses, setAddresses] = useState([]);
@@ -19,6 +20,7 @@ const Address = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
+  const [showForm, setShowForm] = useState(false); // State to control form visibility
 
   useEffect(() => {
     fetchAddresses();
@@ -46,14 +48,11 @@ const Address = () => {
     setLoading(true);
     try {
       if (editing) {
+        // Update address
         await axiosInstance.put(`/addresses/${editingId}`, newAddress);
         toast.success("Address updated successfully!");
       } else {
-        if (newAddress.isDefault) {
-          await axiosInstance.patch("/addresses/set-default", {
-            addressId: null,
-          });
-        }
+        // Add new address
         await axiosInstance.post("/addresses", newAddress);
         toast.success("Address added successfully!");
       }
@@ -67,7 +66,8 @@ const Address = () => {
       });
       setEditing(false);
       setEditingId(null);
-      fetchAddresses();
+      setShowForm(false); // Close the form after submit
+      fetchAddresses(); // Refresh the address list
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to save address");
     } finally {
@@ -86,6 +86,7 @@ const Address = () => {
     });
     setEditing(true);
     setEditingId(address._id);
+    setShowForm(true); // Open the form for editing
   };
 
   const handleDeleteClick = (id) => {
@@ -100,10 +101,6 @@ const Address = () => {
       toast.success("Address deleted successfully!");
       fetchAddresses(); // Refresh the address list
     } catch (error) {
-      console.error(
-        "Error deleting address:",
-        error.response ? error.response.data : error.message
-      );
       toast.error(error.response?.data?.message || "Failed to delete address");
     } finally {
       setIsModalOpen(false);
@@ -116,163 +113,170 @@ const Address = () => {
     setAddressToDelete(null);
   };
 
+  // Cancel button handler to reset form and close
+  const handleCancelForm = () => {
+    setShowForm(false);
+    setNewAddress({
+      street: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+      isDefault: false,
+    });
+  };
+
   return (
-    <div className="container mx-auto p-4">
+    <div className="bg-gray-900 min-h-screen flex flex-col items-center p-8 text-white">
       <Toaster />
-      <h1 className="text-2xl font-bold mb-4">Manage Addresses</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+
+      <h1 className="text-4xl font-bold mb-6">Manage Addresses</h1>
+
+      {/* Add/Edit Address Form Button */}
+      <div className="mb-8 w-full flex justify-center">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            setEditing(false);
+            setNewAddress({
+              street: "",
+              city: "",
+              state: "",
+              postalCode: "",
+              country: "",
+              isDefault: false,
+            });
+            setShowForm(true); // Show the form
+          }}
+          className="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700"
+        >
+          Add New Address
+        </motion.button>
+      </div>
+
+      {/* Address Form (Modal) */}
+      <div
+        className={`w-full max-w-lg p-6 rounded-lg shadow-lg ${
+          showForm ? "block" : "hidden"
+        }`}
       >
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="street"
-          >
-            Street
-          </label>
-          <input
-            type="text"
-            id="street"
-            name="street"
-            value={newAddress.street}
-            onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="city"
-          >
-            City
-          </label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            value={newAddress.city}
-            onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="state"
-          >
-            State
-          </label>
-          <input
-            type="text"
-            id="state"
-            name="state"
-            value={newAddress.state}
-            onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="postalCode"
-          >
-            Postal Code
-          </label>
-          <input
-            type="text"
-            id="postalCode"
-            name="postalCode"
-            value={newAddress.postalCode}
-            onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="country"
-          >
-            Country
-          </label>
-          <input
-            type="text"
-            id="country"
-            name="country"
-            value={newAddress.country}
-            onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        {/* <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="isDefault"
-          >
-            Set as Default
-          </label>
-          <input
-            type="checkbox"
-            id="isDefault"
-            name="isDefault"
-            checked={newAddress.isDefault}
-            onChange={handleInputChange}
-            className="mr-2 leading-tight"
-          />
-        </div> */}
-        <div className="flex items-center justify-between">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            disabled={loading}
-          >
-            {loading ? "Saving..." : editing ? "Update Address" : "Add Address"}
-          </motion.button>
-        </div>
-      </form>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {["street", "city", "state", "postalCode", "country"].map((field) => (
+            <div key={field}>
+              <label className="text-sm font-medium">
+                {field.charAt(0).toUpperCase() + field.slice(1)}
+              </label>
+              <input
+                type="text"
+                name={field}
+                value={newAddress[field]}
+                onChange={handleInputChange}
+                className="w-full bg-gray-800 border border-gray-600 p-3 rounded-lg mt-2 text-white focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+          ))}
+          <div className="flex justify-between">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="submit"
+              className="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700"
+              disabled={loading}
+            >
+              {loading
+                ? "Saving..."
+                : editing
+                ? "Update Address"
+                : "Add Address"}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="button"
+              onClick={handleCancelForm}
+              className="bg-gray-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-gray-700"
+            >
+              Cancel
+            </motion.button>
+          </div>
+        </form>
+      </div>
+
+      {/* Address List */}
+      <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {addresses.map((address) => (
           <motion.div
             key={address._id}
-            className="bg-white shadow-md rounded p-4"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            className="bg-gray-800 p-6 rounded-lg shadow-xl hover:bg-gray-700 transition"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <h2 className="text-lg font-bold mb-2">{address.street}</h2>
+            <h3 className="text-xl font-semibold mb-3">{address.street}</h3>
             <p>{`${address.city}, ${address.state}, ${address.postalCode}, ${address.country}`}</p>
-            {/* <p className="mt-2">
-              <strong>Default:</strong> {address.isDefault ? "Yes" : "No"}
-            </p> */}
-            <div className="flex mt-4">
-              <button
+            <div className="flex justify-between items-center mt-6">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleEdit(address)}
-                className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded mr-2"
+                className="bg-yellow-500 text-white py-2 px-4 rounded-lg flex items-center hover:bg-yellow-600"
               >
+                <FaEdit className="w-5 h-5 mr-2" />
                 Edit
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleDeleteClick(address._id)}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                className="bg-red-600 text-white py-2 px-4 rounded-lg flex items-center hover:bg-red-700"
               >
+                <FaTrash className="w-5 h-5 mr-2" />
                 Delete
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         ))}
       </div>
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        message="Are you sure you want to delete this address?"
-      />
+
+      {/* Confirmation Modal */}
+      <div
+        className={`fixed inset-0 flex justify-center items-center z-50 ${
+          isModalOpen ? "block" : "hidden"
+        }`}
+      >
+        <div
+          className="bg-gray-800 bg-opacity-70 w-full h-full absolute top-0 left-0"
+          onClick={handleCancelDelete}
+        ></div>
+        <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-96 z-10">
+          <h2 className="text-xl font-semibold mb-4 text-center text-white">
+            Delete Address
+          </h2>
+          <p className="text-white text-center mb-6">
+            Are you sure you want to delete this address? This action cannot be
+            undone.
+          </p>
+          <div className="flex justify-around">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleConfirmDelete}
+              className="bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700"
+            >
+              Yes, Delete
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleCancelDelete}
+              className="bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700"
+            >
+              Cancel
+            </motion.button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
