@@ -7,70 +7,55 @@ const ProductGrid = ({ products }) => {
   const { mutate: addToCart } = useAddToCart();
   const { mutate: addToWishlist } = useAddToWishlist();
 
-  const handleAddToCart = (productId) => {
-    addToCart(productId);
-  };
-
-  const handleAddToWishlist = (productId) => {
-    addToWishlist(productId);
-  };
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div className="max-w-screen-xl mx-auto py-16 px-8 bg-gradient-to-b from-gray-900 to-black text-white">
+      <h2 className="text-4xl font-extrabold text-center mb-10 text-gray-100 tracking-wider">Explore the Future of Shopping</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
         {products.map((product) => (
           <motion.div
             key={product._id}
-            className="bg-white shadow-lg rounded-lg overflow-hidden relative flex flex-col transform transition-transform duration-300 ease-in-out hover:scale-105"
-            whileHover={{ scale: 1.03 }}
+            className="relative bg-gray-800 p-6 rounded-2xl shadow-xl flex flex-col items-center transition-all transform hover:scale-105 hover:shadow-2xl hover:bg-gray-700"
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="relative w-full h-80">
-              <Link to={`/product/${product._id}`}>
-                <img
+            <Link to={`/product/${product._id}`} className="w-full flex flex-col items-center">
+              <div className="relative w-full h-64 flex items-center justify-center bg-gray-900 rounded-xl mb-4 overflow-hidden shadow-lg">
+                <motion.img
                   src={product.productImage[0]}
                   alt={product.name}
-                  className="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-110"
+                  className="w-4/5 h-4/5 object-contain transition-transform duration-500 ease-in-out hover:scale-110 hover:rotate-3"
+                  whileHover={{ scale: 1.1, rotate: 3 }}
                 />
-              </Link>
-              <button
-                onClick={() => handleAddToWishlist(product._id)}
-                className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors duration-300 ease-in-out"
+              </div>
+              <h3 className="text-xl font-semibold text-gray-200 mb-2 text-center tracking-wide">
+                {product.name}
+              </h3>
+              <p className="text-blue-400 text-2xl font-bold">
+                ₹{product.price}
+                {product.originalPrice && (
+                  <span className="text-sm text-gray-500 ml-2 line-through">₹{product.originalPrice}</span>
+                )}
+              </p>
+            </Link>
+            <div className="absolute top-4 right-4">
+              <motion.button
+                onClick={() => addToWishlist(product._id)}
+                className="p-3 bg-gray-700 rounded-full shadow-md hover:bg-red-500 transition-all"
                 aria-label="Add to Wishlist"
+                whileHover={{ scale: 1.1 }}
               >
-                <FaRegHeart className="text-red-500" />
-              </button>
-            </div>
-            <div className="p-4 flex flex-col flex-grow text-center">
-              <Link
-                to={`/product/${product._id}`}
-                className="flex flex-col items-center"
-              >
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
-                  {product.name}
-                </h3>
-                <p className="text-gray-600">
-                  <span className="text-xl font-bold text-gray-900">
-                    ₹{product.price}
-                  </span>
-                  {product.originalPrice && (
-                    <span className="text-sm text-gray-500 ml-2 line-through">
-                      ₹{product.originalPrice}
-                    </span>
-                  )}
-                </p>
-              </Link>
+                <FaRegHeart className="text-white" />
+              </motion.button>
             </div>
             <motion.button
-              onClick={() => handleAddToCart(product._id)}
-              className="bg-blue-500 text-white p-3 rounded-b-lg flex items-center justify-center hover:bg-blue-600 focus:outline-none relative overflow-hidden"
+              onClick={() => addToCart(product._id)}
+              className="mt-6 w-full bg-blue-500 text-white py-4 rounded-xl flex items-center justify-center hover:bg-blue-600 focus:outline-none relative overflow-hidden"
               aria-label="Add to Cart"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <FaShoppingCart className="mr-2" />
-              <span className="text-base font-semibold">Add to Cart</span>
-              <span className="absolute inset-0 bg-blue-600 opacity-30 transition-transform duration-300 ease-in-out transform translate-x-full group-hover:translate-x-0"></span>
+              <FaShoppingCart className="mr-2 text-lg" />
+              <span className="text-lg font-semibold">Add to Cart</span>
             </motion.button>
           </motion.div>
         ))}

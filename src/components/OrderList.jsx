@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { formatDate } from "../utils/formatDate";
 import OrderSummary from "./OrderSummary";
 import { motion } from "framer-motion";
-import { FaMoon, FaSearch, FaSlidersH } from "react-icons/fa";
 
 const OrderList = () => {
   const { data: orders = [], isLoading, error } = useAllOrders();
@@ -29,7 +28,7 @@ const OrderList = () => {
       if (sortOption === "date")
         return new Date(b.createdAt) - new Date(a.createdAt);
       if (sortOption === "amount") return b.totalAmount - a.totalAmount;
-      if (sortOption === "status") return a.status.localeCompare(b.status);
+      if (sortOption === "status") return a.status?.localeCompare(b.status);
     });
 
   if (isLoading)
@@ -49,20 +48,11 @@ const OrderList = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        <OrderSummary orders={filteredOrders} />
         Order History
       </motion.h2>
 
       <div className="bg-gray-800 p-6 rounded-xl shadow-lg mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
-        <div className="relative flex-1">
-          <FaSearch className="absolute left-3 top-3 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search orders..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="bg-gray-700 text-white border border-gray-600 rounded-lg pl-10 pr-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
         <select
           onChange={handleFilter}
           value={filterStatus}
@@ -118,24 +108,32 @@ const OrderList = () => {
               <td className="p-4">
                 <span
                   className={`px-3 py-1 rounded-full text-xs text-white font-semibold ${
-                    order.status === "Shipped"
-                      ? "bg-blue-500"
-                      : order.status === "Delivered"
-                      ? "bg-green-500"
-                      : order.status === "Cancelled"
-                      ? "bg-red-500"
-                      : "bg-yellow-500"
+                    order.status
+                      ? order.status === "Shipped"
+                        ? "bg-blue-500"
+                        : order.status === "Delivered"
+                        ? "bg-green-500"
+                        : order.status === "Cancelled"
+                        ? "bg-red-500"
+                        : order.status === "Pending"
+                        ? "bg-yellow-500"
+                        : "bg-gray-500"
+                      : "bg-gray-500"
                   }`}
                 >
-                  {order.status}
+                  {order.status || "Status Not Available"}
                 </span>
+                {!order.status && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    This order has no status assigned.
+                  </p>
+                )}
               </td>
               <td className="p-4">₹{order.totalAmount.toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
       </motion.table>
-      <OrderSummary orders={filteredOrders} />
     </div>
   );
 };

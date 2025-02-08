@@ -27,15 +27,15 @@ const OrderDetails = () => {
     );
   };
 
-  const handleDeleteOrder = () => {
-    deleteOrder.mutate(id, {
-      onSuccess: () => {
-        toast.success("Order deleted");
-        navigate("/orders");
-      },
-      onError: (error) => toast.error(`Error deleting order: ${error.message}`),
-    });
-  };
+  // const handleDeleteOrder = () => {
+  //   deleteOrder.mutate(id, {
+  //     onSuccess: () => {
+  //       toast.success("Order deleted");
+  //       navigate("/orders");
+  //     },
+  //     onError: (error) => toast.error(`Error deleting order: ${error.message}`),
+  //   });
+  // };
 
   if (isLoading)
     return <p className="text-center text-gray-500">Loading order details...</p>;
@@ -114,7 +114,7 @@ const OrderDetails = () => {
       <div className="w-20 h-20 flex-shrink-0">
         <img
           src={item.productId.productImage?.[0] || "https://via.placeholder.com/80"}
-          className="w-full h-full object-cover rounded-lg"
+          className="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-110"
           alt={item.productId.name || "Product Image"}
         />
       </div>
@@ -136,12 +136,12 @@ const OrderDetails = () => {
             <FaTimes /> Cancel Order
           </button>
          
-          <button
+          {/* <button
             onClick={handleDeleteOrder}
             className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition flex items-center gap-2"
           >
             <FaTrash /> Delete Order
-          </button>
+          </button> */}
         </div>
       </motion.div>
     </div>

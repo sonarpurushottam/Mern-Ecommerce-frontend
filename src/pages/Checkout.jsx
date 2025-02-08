@@ -265,7 +265,7 @@ const Checkout = () => {
                       "/default_image_url.png"
                     }
                     alt={item.productId?.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain transition-transform duration-300 ease-in-out hover:scale-110"
                   />
                 </div>
                 <div>

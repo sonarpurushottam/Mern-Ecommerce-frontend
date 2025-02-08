@@ -40,16 +40,16 @@ const ProductDescription = () => {
     addToWishlist(product._id);
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="text-center text-white text-2xl">Loading...</div>;
   if (isError) {
     console.error("Error fetching product:", error);
-    return <div>Error fetching product</div>;
+    return <div className="text-center text-red-500 text-xl">Error fetching product</div>;
   }
 
   return (
-    <div className="container mx-auto p-6 md:p-12">
+    <div className="max-w-screen-xl mx-auto p-8 bg-gray-900 text-white rounded-lg shadow-lg"> 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="relative w-full h-96 md:h-[40rem]">
+        <div className="relative w-full h-96 md:h-[40rem] bg-gray-800 p-4 rounded-lg shadow-lg">
           <Swiper
             modules={[Pagination, A11y]}
             spaceBetween={10}
@@ -59,11 +59,11 @@ const ProductDescription = () => {
           >
             {product.productImage.map((image, index) => (
               <SwiperSlide key={index}>
-                <motion.div className="relative w-full h-full">
+                <motion.div className="relative w-full h-full flex items-center justify-center">
                   <img
                     src={image}
                     alt={`Product ${index}`}
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="max-w-full max-h-full object-cover rounded-lg shadow-lg"
                   />
                 </motion.div>
               </SwiperSlide>
@@ -72,7 +72,7 @@ const ProductDescription = () => {
         </div>
         <div className="flex flex-col justify-center">
           <motion.h2
-            className="text-4xl font-bold mb-4 text-gray-800"
+            className="text-4xl font-bold mb-4 text-gray-100"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -80,7 +80,7 @@ const ProductDescription = () => {
             {product.name}
           </motion.h2>
           <motion.p
-            className="text-2xl text-gray-700 mb-2"
+            className="text-2xl text-blue-400 mb-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -88,7 +88,7 @@ const ProductDescription = () => {
             ₹{product.price}
           </motion.p>
           <motion.p
-            className="text-gray-600 mb-8"
+            className="text-gray-400 mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
@@ -98,14 +98,14 @@ const ProductDescription = () => {
           <div className="flex space-x-4 mb-8">
             <motion.button
               onClick={handleAddToCart}
-              className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-md shadow-lg transform hover:scale-105 transition-transform duration-300 ease-out"
+              className="bg-gradient-to-r from-blue-600 to-indigo-800 text-white px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-out"
               whileTap={{ scale: 0.95 }}
             >
               Add to Cart
             </motion.button>
             <motion.button
               onClick={handleAddToWishlist}
-              className="bg-gradient-to-r from-green-500 to-green-700 text-white px-6 py-3 rounded-md shadow-lg transform hover:scale-105 transition-transform duration-300 ease-out"
+              className="bg-gradient-to-r from-green-600 to-teal-800 text-white px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-out"
               whileTap={{ scale: 0.95 }}
             >
               Add to Wishlist
