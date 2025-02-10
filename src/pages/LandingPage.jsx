@@ -16,18 +16,18 @@ const LandingPage = () => {
   return (
     <>
       <HeroSection />
-      <FeaturesSection />
+      {/* <FeaturesSection />
       <ProductShowcase />
       <AboutUsSection />
       <TestimonialsSection />
       <NewsletterSection />
-      <FAQSection />
+      <FAQSection /> */}
       {/* <PartnersSection /> */}
       {/* <CTASection /> */}
       {/* <GallerySection /> */}
       {/* <TeamSection /> */}
       {/* <BlogSection /> */}
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

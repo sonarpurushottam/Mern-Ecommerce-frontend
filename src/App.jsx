@@ -45,9 +45,9 @@ const App = () => {
           </AnimatePresence>
         </main>
 
-        <footer className="text-center py-4 bg-[#131517] text-gray-400 text-sm">
+        {/* <footer className="text-center py-4 bg-[#131517] text-gray-400 text-sm">
           © {new Date().getFullYear()} Futuristic Store. All Rights Reserved.
-        </footer>
+        </footer> */}
       </div>
     </Router>
   );
